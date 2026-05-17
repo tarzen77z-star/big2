@@ -1165,7 +1165,7 @@
 
         function toggleVoice() {
             if (isListening) {
-                stopListening();
+                stopListening(true);
             } else {
                 startListening();
             }
@@ -1174,58 +1174,71 @@
         function startListening() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                showVoiceResult('error', voiceLang === 'zh' ? '❌ 此瀏覽器唔支援語音輸入。請用 iPhone 嘅 Safari 或者 Android 嘅 Chrome。' : '❌ Speech recognition is not supported on this browser. Try Safari on iPhone or Chrome on Android.');
+                showVoiceResult('error', voiceLang === 'zh'
+                    ? '❌ 此瀏覽器唔支援語音輸入。請用 iPhone 嘅 Safari 或者 Android 嘅 Chrome。'
+                    : '❌ Speech recognition is not supported on this browser. Try Safari on iPhone or Chrome on Android.');
                 return;
             }
-            recognition = initRecognition();
-            const btn = document.getElementById('voiceBtn');
-            const transcript = document.getElementById('voiceTranscript');
-            const result = document.getElementById('voiceResult');
 
-            result.className = 'voice-result';
-            result.style.display = 'none';
+            const transcript = document.getElementById('voiceTranscript');
+            document.getElementById('voiceResult').className = 'voice-result';
+            document.getElementById('voiceResult').style.display = 'none';
             transcript.textContent = voiceLang === 'zh' ? '聽緊… 請講嘢 🎤' : 'Listening… speak now 🎤';
             transcript.classList.add('active');
-            btn.classList.add('listening');
+            document.getElementById('voiceBtn').classList.add('listening');
             document.getElementById('voiceBtnIcon').textContent = '⏹';
             document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '撳咗停止' : 'Tap to Stop';
             isListening = true;
 
-            recognition.onresult = function(e) {
-                let interim = '';
-                let final = '';
-                for (let i = e.resultIndex; i < e.results.length; i++) {
-                    if (e.results[i].isFinal) {
-                        final += e.results[i][0].transcript;
-                    } else {
-                        interim += e.results[i][0].transcript;
+            function createAndStart() {
+                if (!isListening) return; // user stopped
+                const rec = initRecognition();
+                recognition = rec;
+
+                rec.onresult = function(e) {
+                    let interim = '', final = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+                        else interim += e.results[i][0].transcript;
                     }
-                }
-                transcript.textContent = final || interim || 'Listening…';
-                if (final) {
-                    parseVoiceInput(final.trim());
-                }
-            };
+                    transcript.textContent = final || interim || (voiceLang === 'zh' ? '聽緊…' : 'Listening…');
+                    if (final) {
+                        parseVoiceInput(final.trim());
+                        stopListening(false);
+                    }
+                };
 
-            recognition.onerror = function(e) {
-                let msg = voiceLang === 'zh' ? '❌ 聽唔到，請再試。' : '❌ Could not hear you. Try again.';
-                if (e.error === 'not-allowed') msg = voiceLang === 'zh' ? '❌ 未批准使用咪高峰。請喺瀏覽器設定入面允許咪高峰。' : '❌ Microphone access denied. Please allow microphone in your browser settings.';
-                else if (e.error === 'no-speech') msg = voiceLang === 'zh' ? '❌ 冇探測到聲音，請再試。' : '❌ No speech detected. Try again.';
-                showVoiceResult('error', msg);
-                stopListening(false);
-            };
+                rec.onerror = function(e) {
+                    if (e.error === 'aborted') return; // intentional stop, ignore
+                    let msg = voiceLang === 'zh' ? '❌ 聽唔到，請再試。' : '❌ Could not hear you. Try again.';
+                    if (e.error === 'not-allowed') msg = voiceLang === 'zh'
+                        ? '❌ 未批准使用咪高峰。請喺瀏覽器設定入面允許咪高峰。'
+                        : '❌ Microphone access denied. Please allow microphone in your browser settings.';
+                    else if (e.error === 'no-speech') msg = voiceLang === 'zh'
+                        ? '❌ 冇探測到聲音，請再試。'
+                        : '❌ No speech detected. Try again.';
+                    showVoiceResult('error', msg);
+                    stopListening(false);
+                };
 
-            recognition.onend = function() {
-                stopListening(false);
-            };
+                // iOS Safari ends recognition after each utterance pause.
+                // If the user hasn't tapped Stop, restart automatically.
+                rec.onend = function() {
+                    if (!isListening) return; // user tapped Stop — don't restart
+                    // Small delay before restarting to avoid overlapping sessions
+                    setTimeout(createAndStart, 150);
+                };
 
-            recognition.start();
+                try { rec.start(); } catch(e) { stopListening(false); }
+            }
+
+            createAndStart();
         }
 
         function stopListening(clearTranscript = true) {
-            isListening = false;
+            isListening = false; // set FIRST so onend restart loop stops
             if (recognition) {
-                try { recognition.stop(); } catch(e) {}
+                try { recognition.abort(); } catch(e) {}
                 recognition = null;
             }
             const btn = document.getElementById('voiceBtn');
