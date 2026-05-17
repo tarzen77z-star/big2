@@ -319,6 +319,109 @@
             font-size: 13px;
             display: none;
         }
+
+        /* ── Voice Input ── */
+        .voice-section {
+            background: rgba(0,217,255,0.07);
+            border: 1px solid rgba(0,217,255,0.25);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+        .voice-section h3 {
+            color: #00d9ff;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .lang-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid rgba(0,217,255,0.3);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #888;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn.lang-active {
+            background: rgba(0,217,255,0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+        .voice-hint {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .voice-hint code {
+            background: rgba(0,0,0,0.3);
+            padding: 1px 5px;
+            border-radius: 4px;
+            color: #00d9ff;
+            font-size: 11px;
+        }
+        .btn-voice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+            color: #000;
+            letter-spacing: 0.5px;
+        }
+        .btn-voice:active { transform: scale(0.97); }
+        .btn-voice.listening {
+            background: linear-gradient(135deg, #ff4757 0%, #c0392b 100%);
+            color: #fff;
+            animation: pulse-mic 1.2s infinite;
+        }
+        @keyframes pulse-mic {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,71,87,0.5); }
+            50%      { box-shadow: 0 0 0 10px rgba(255,71,87,0); }
+        }
+        .voice-transcript {
+            margin-top: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #ccc;
+            min-height: 36px;
+            line-height: 1.5;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .voice-transcript.active { display: block; }
+        .voice-result {
+            margin-top: 10px;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: none;
+        }
+        .voice-result.success {
+            background: rgba(0,255,136,0.12);
+            border: 1px solid rgba(0,255,136,0.3);
+            color: #00ff88;
+            display: block;
+        }
+        .voice-result.error {
+            background: rgba(255,71,87,0.12);
+            border: 1px solid rgba(255,71,87,0.3);
+            color: #ff6b6b;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -332,6 +435,31 @@
             <span class="multiplier-badge mult-3x">10-12 = 3x</span> 
             <span class="multiplier-badge mult-4x">13 = 4x</span><br>
             <strong>Goal:</strong> Highest cumulative score wins!
+        </div>
+
+        <!-- Voice Input Section -->
+        <div class="voice-section">
+            <h3>🎤 Voice Entry</h3>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button id="langEn" class="lang-btn lang-active" onclick="setLang('en')">🇬🇧 English</button>
+                <button id="langZh" class="lang-btn" onclick="setLang('zh')">🇭🇰 廣東話</button>
+            </div>
+            <p class="voice-hint" id="voiceHintEn">
+                Tap the button and speak the card counts. You can say player names or positions.<br>
+                Example: <code>"Peter had 5 cards, Mary won, John had 8, David had 11"</code><br>
+                Or: <code>"Player 1 had 7, player 2 won, player 3 had 9, player 4 had 3"</code>
+            </p>
+            <p class="voice-hint" id="voiceHintZh" style="display:none;">
+                撳個掣講出每個玩家嘅牌數。可以講玩家名或者位置。<br>
+                例如：<code>「Peter 有五張，Mary 贏咗，John 有八張，David 有十一張」</code><br>
+                或者：<code>「一號玩家七張，二號玩家三張，三號玩家贏，四號玩家九張」</code>
+            </p>
+            <button class="btn-voice" id="voiceBtn" onclick="toggleVoice()">
+                <span id="voiceBtnIcon">🎤</span>
+                <span id="voiceBtnText">Tap to Speak</span>
+            </button>
+            <div class="voice-transcript" id="voiceTranscript">Listening…</div>
+            <div class="voice-result" id="voiceResult"></div>
         </div>
 
         <div class="card">
@@ -1005,6 +1133,230 @@
 
         // Initialize
         loadData();
+
+        // ─────────────────────────────────────────────
+        //  VOICE INPUT
+        // ─────────────────────────────────────────────
+        let recognition = null;
+        let isListening = false;
+        let voiceLang = 'en'; // default English
+
+        function setLang(lang) {
+            voiceLang = lang;
+            document.getElementById('langEn').classList.toggle('lang-active', lang === 'en');
+            document.getElementById('langZh').classList.toggle('lang-active', lang === 'zh');
+            document.getElementById('voiceHintEn').style.display = lang === 'en' ? '' : 'none';
+            document.getElementById('voiceHintZh').style.display = lang === 'zh' ? '' : 'none';
+            document.getElementById('voiceBtnText').textContent = lang === 'en' ? 'Tap to Speak' : '撳咗講嘢';
+            document.getElementById('voiceResult').className = 'voice-result';
+            document.getElementById('voiceResult').style.display = 'none';
+        }
+
+        function initRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return null;
+            const r = new SpeechRecognition();
+            r.continuous = false;
+            r.interimResults = true;
+            r.lang = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
+            r.maxAlternatives = 3;
+            return r;
+        }
+
+        function toggleVoice() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        }
+
+        function startListening() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showVoiceResult('error', voiceLang === 'zh' ? '❌ 此瀏覽器唔支援語音輸入。請用 iPhone 嘅 Safari 或者 Android 嘅 Chrome。' : '❌ Speech recognition is not supported on this browser. Try Safari on iPhone or Chrome on Android.');
+                return;
+            }
+            recognition = initRecognition();
+            const btn = document.getElementById('voiceBtn');
+            const transcript = document.getElementById('voiceTranscript');
+            const result = document.getElementById('voiceResult');
+
+            result.className = 'voice-result';
+            result.style.display = 'none';
+            transcript.textContent = voiceLang === 'zh' ? '聽緊… 請講嘢 🎤' : 'Listening… speak now 🎤';
+            transcript.classList.add('active');
+            btn.classList.add('listening');
+            document.getElementById('voiceBtnIcon').textContent = '⏹';
+            document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '撳咗停止' : 'Tap to Stop';
+            isListening = true;
+
+            recognition.onresult = function(e) {
+                let interim = '';
+                let final = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) {
+                        final += e.results[i][0].transcript;
+                    } else {
+                        interim += e.results[i][0].transcript;
+                    }
+                }
+                transcript.textContent = final || interim || 'Listening…';
+                if (final) {
+                    parseVoiceInput(final.trim());
+                }
+            };
+
+            recognition.onerror = function(e) {
+                let msg = voiceLang === 'zh' ? '❌ 聽唔到，請再試。' : '❌ Could not hear you. Try again.';
+                if (e.error === 'not-allowed') msg = voiceLang === 'zh' ? '❌ 未批准使用咪高峰。請喺瀏覽器設定入面允許咪高峰。' : '❌ Microphone access denied. Please allow microphone in your browser settings.';
+                else if (e.error === 'no-speech') msg = voiceLang === 'zh' ? '❌ 冇探測到聲音，請再試。' : '❌ No speech detected. Try again.';
+                showVoiceResult('error', msg);
+                stopListening(false);
+            };
+
+            recognition.onend = function() {
+                stopListening(false);
+            };
+
+            recognition.start();
+        }
+
+        function stopListening(clearTranscript = true) {
+            isListening = false;
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+                recognition = null;
+            }
+            const btn = document.getElementById('voiceBtn');
+            btn.classList.remove('listening');
+            document.getElementById('voiceBtnIcon').textContent = '🎤';
+            document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '撳咗講嘢' : 'Tap to Speak';
+            if (clearTranscript) {
+                document.getElementById('voiceTranscript').classList.remove('active');
+            }
+        }
+
+        // ── Parse the spoken text into card values ──
+        function parseVoiceInput(text) {
+            const lower = text.toLowerCase();
+
+            // ── Chinese & English number normalisation ──
+            const chineseNums = {
+                '零':0,'〇':0,'一':1,'二':2,'兩':2,'三':3,'四':4,'五':5,
+                '六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12,'十三':13
+            };
+            const wordNums = {
+                zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,
+                nine:9,ten:10,eleven:11,twelve:12,thirteen:13
+            };
+
+            // Replace multi-char Chinese numbers first (十一,十二,十三), then single chars
+            let normalised = lower;
+            ['十三','十二','十一','十'].forEach(w => {
+                normalised = normalised.split(w).join(String(chineseNums[w]));
+            });
+            ['零','〇','一','二','兩','三','四','五','六','七','八','九'].forEach(w => {
+                normalised = normalised.split(w).join(String(chineseNums[w]));
+            });
+            // English number words
+            normalised = normalised.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen)\b/g,
+                m => wordNums[m]);
+
+            // ── Player name / alias lookup ──
+            const names = gameState.playerNames.map(n => n.toLowerCase());
+            const aliases = [
+                [names[0], 'player 1', 'player one', 'p1', '一號', '1號', '第一'],
+                [names[1], 'player 2', 'player two', 'p2', '二號', '2號', '第二'],
+                [names[2], 'player 3', 'player three', 'p3', '三號', '3號', '第三'],
+                [names[3], 'player 4', 'player four', 'p4', '四號', '4號', '第四'],
+            ];
+
+            const found = {}; // playerIndex → {cards, won}
+
+            // Split on commas / 、/ 。/ "and" / 同 / 同埋
+            const segments = normalised.split(/[,，、。;；]|\band\b|同埋|同/).map(s => s.trim()).filter(Boolean);
+
+            for (const seg of segments) {
+                let playerIdx = -1;
+                for (let i = 0; i < 4; i++) {
+                    for (const alias of aliases[i]) {
+                        if (alias && seg.includes(alias)) {
+                            playerIdx = i;
+                            break;
+                        }
+                    }
+                    if (playerIdx !== -1) break;
+                }
+                if (playerIdx === -1) continue;
+
+                // Cantonese + English win keywords
+                const wonKeywords = /\b(won|win|winner|first|champion)\b|贏|贏咗|冠軍|出晒/;
+                if (wonKeywords.test(seg)) {
+                    found[playerIdx] = { cards: 0, won: true };
+                    continue;
+                }
+
+                const numMatch = seg.match(/\b(\d+)\b/);
+                if (numMatch) {
+                    const cards = parseInt(numMatch[1]);
+                    if (cards >= 0 && cards <= 13) {
+                        found[playerIdx] = { cards, won: cards === 0 };
+                    }
+                }
+            }
+
+            // ── Fallback: positional numbers ──
+            if (Object.keys(found).length === 0) {
+                const nums = [...normalised.matchAll(/\b(\d+)\b/g)].map(m => parseInt(m[1])).filter(n => n <= 13);
+                nums.forEach((n, i) => {
+                    if (i < 4) found[i] = { cards: n, won: n === 0 };
+                });
+            }
+
+            if (Object.keys(found).length === 0) {
+                showVoiceResult('error', voiceLang === 'zh'
+                    ? '❌ 聽唔明，請再試。例如：「Peter 有五張，Mary 贏咗，John 八張，David 十一張」'
+                    : '❌ Could not understand the scores. Try: "Peter had 5 cards, Mary won, John 8 cards, David 11 cards"');
+                return;
+            }
+
+            // ── Fill form ──
+            let filled = 0, winnerCount = 0;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`p${i}`).value = '';
+                document.getElementById(`p${i}win`).checked = false;
+            }
+            for (const [idxStr, data] of Object.entries(found)) {
+                const i = parseInt(idxStr) + 1;
+                const cardInput = document.getElementById(`p${i}`);
+                const winInput  = document.getElementById(`p${i}win`);
+                if (!cardInput) continue;
+                cardInput.value = data.cards;
+                if (data.won) { winInput.checked = true; winnerCount++; }
+                filled++;
+            }
+
+            const isZh = voiceLang === 'zh';
+            const parts = Object.entries(found).map(([idx, d]) => {
+                const name = gameState.playerNames[parseInt(idx)] || `Player ${parseInt(idx)+1}`;
+                return d.won
+                    ? `${name} 👑 ${isZh ? '贏' : 'won'}`
+                    : `${name}: ${d.cards}${isZh ? '張' : ` card${d.cards !== 1 ? 's' : ''}`}`;
+            });
+            const warnExtra   = winnerCount > 1 ? (isZh ? ' ⚠️ 多過一個贏家，請檢查。' : ' ⚠️ Multiple winners detected — please check.') : '';
+            const warnMissing = filled < 4 ? (isZh ? ` ℹ️ 只填咗 ${filled}/4 個玩家，請手動補充。` : ` ℹ️ Only ${filled}/4 players filled — check the rest manually.`) : '';
+            showVoiceResult('success', isZh
+                ? `✅ 已填入：${parts.join(' · ')}${warnExtra}${warnMissing}`
+                : `✅ Filled: ${parts.join(' · ')}${warnExtra}${warnMissing}`);
+        }
+
+        function showVoiceResult(type, msg) {
+            const el = document.getElementById('voiceResult');
+            el.className = `voice-result ${type}`;
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
     </script>
 </body>
 </html>
