@@ -1227,16 +1227,24 @@
             u.lang = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
             u.rate = 1.05;
             let started = false;
-            const go = () => { if (!started) { started = true; if (currentStep >= 0 && currentStep <= 3) startListeningStep(); } };
-            u.onend   = go;
+            const go = () => {
+                if (!started) {
+                    started = true;
+                    if (currentStep >= 0 && currentStep <= 3) startListeningStep();
+                }
+            };
+            u.onend = go;
             u.onerror = go;
             window.speechSynthesis.speak(u);
-            // Fallback: if TTS takes >3s or never fires, start listening anyway
-            setTimeout(go, 3000);
+            // Safety fallback — if TTS never fires onend (iOS bug), start mic anyway
+            // Use longer delay for English since it tends to be slower to fire
+            setTimeout(go, voiceLang === 'zh' ? 3000 : 4000);
             document.getElementById('voiceBtn').classList.remove('listening');
             document.getElementById('voiceBtnIcon').textContent = '🔊';
             document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '問緊…' : 'Asking…';
-        } else { startListeningStep(); }
+        } else {
+            startListeningStep();
+        }
     }
 
     function startListeningStep() {
@@ -1245,14 +1253,13 @@
         document.getElementById('voiceBtn').classList.add('listening');
         document.getElementById('voiceBtnIcon').textContent = '🎤';
         document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '聽緊…' : 'Listening…';
+        document.getElementById('voiceTranscript').textContent = ''; // clear before each attempt
         spawnRecognition();
     }
 
     function spawnRecognition() {
         if (!isListening || currentStep < 0) return;
         const rec = new SpeechRecognitionAPI();
-        // iOS Safari works better with continuous=false but needs restart loop (already handled).
-        // For English, interimResults is key — without it nothing shows while speaking.
         rec.continuous      = false;
         rec.interimResults  = true;
         rec.maxAlternatives = 3;
@@ -1267,9 +1274,9 @@
                 if (e.results[i].isFinal) final   += e.results[i][0].transcript;
                 else                       interim += e.results[i][0].transcript;
             }
-            // Always show something — this is what was missing for English
-            if (interim) tEl.textContent = '…' + interim;
-            if (final)   tEl.textContent = final;
+            // Always show — overwrite (not append) each time
+            if (final)        tEl.textContent = final;
+            else if (interim) tEl.textContent = interim + '…';
 
             if (final.trim() && !gotFinal) {
                 gotFinal = true;
@@ -1280,36 +1287,43 @@
                     showStepConfirm(parsed);
                     setTimeout(advanceStep, 700);
                 } else {
-                    // Show what was heard, retry after a moment
-                    tEl.textContent = '❓ "' + final.trim() + '" — try again';
+                    tEl.textContent = '❓ "' + final.trim() + '"';
                     stopListening();
+                    // clear and retry after short pause
                     setTimeout(() => {
-                        if (currentStep >= 0) { gotFinal = false; tEl.textContent = ''; startListeningStep(); }
+                        if (currentStep >= 0) {
+                            tEl.textContent = '';
+                            gotFinal = false;
+                            startListeningStep();
+                        }
                     }, 1200);
                 }
             }
         };
 
         rec.onspeechstart = function() {
-            // User started speaking — show mic is active
             if (!tEl.textContent) tEl.textContent = '…';
         };
 
         rec.onerror = function(e) {
             if (!isListening) return;
             if (e.error === 'aborted') return;
-            if (e.error === 'no-speech') return; // silence — restart quietly
+            if (e.error === 'no-speech') return;
             if (e.error === 'not-allowed') {
-                showVoiceResult('error', voiceLang === 'zh' ? '❌ 請允許使用咪高峰。' : '❌ Please allow microphone access in browser settings.');
+                showVoiceResult('error', voiceLang === 'zh' ? '❌ 請允許使用咪高峰。' : '❌ Please allow microphone access in Safari Settings.');
                 abortGuided();
             }
         };
 
-        // iOS fires onend after each pause — restart loop keeps mic alive
         rec.onend = function() {
-            if (!isListening) return;
-            if (gotFinal) return; // already handled
-            restartTimer = setTimeout(spawnRecognition, 100);
+            if (!isListening || gotFinal) return;
+            // Restart loop — clears transcript each time so old words don't accumulate
+            restartTimer = setTimeout(() => {
+                if (isListening && !gotFinal) {
+                    tEl.textContent = ''; // ← key fix for Cantonese accumulation
+                    spawnRecognition();
+                }
+            }, 100);
         };
 
         try { rec.start(); } catch(_) {
