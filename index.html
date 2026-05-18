@@ -2,1517 +2,1391 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stony 鋤大弟 Big 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>鋤大弟 Big 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=IM+Fell+English:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --green-dark:  #0e2918;
+            --green-mid:   #163a22;
+            --green-felt:  #1a4428;
+            --green-card:  #1e5230;
+            --green-hover: #245e36;
+            --gold:        #c9a84c;
+            --gold-light:  #e8c97a;
+            --gold-dim:    #7a6230;
+            --cream:       #f2e8c9;
+            --cream-dim:   #b0a07a;
+            --red-suit:    #c0392b;
+            --border-gold: rgba(201,168,76,0.3);
+            --border-felt: rgba(201,168,76,0.12);
+            --radius:      12px;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--green-dark);
+            background-image:
+                radial-gradient(ellipse at 50% 0%, rgba(26,68,40,0.8) 0%, transparent 70%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--cream);
             min-height: 100vh;
-            padding: 20px;
-            color: #fff;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #00d9ff;
-            text-shadow: 0 0 10px rgba(0,217,255,0.5);
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        .card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .card h2 {
-            color: #00d9ff;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        .players-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        .player-input {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .player-input label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #aaa;
-        }
-        .player-input input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            font-size: 18px;
-            text-align: center;
-        }
-        .player-input input:focus {
-            outline: none;
-            border-color: #00d9ff;
-        }
-        .player-input input.error {
-            border-color: #ff4757;
-        }
-        .player-input .winner-check {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            font-size: 12px;
-            color: #888;
-        }
-        .player-input .winner-check input {
-            width: auto;
-        }
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
-            color: #000;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,217,255,0.4);
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            margin-top: 10px;
-        }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        .score-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .score-table th,
-        .score-table td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .score-table th {
-            color: #00d9ff;
-            font-weight: 600;
-        }
-        .score-table .positive {
-            color: #00ff88;
-        }
-        .score-table .negative {
-            color: #ff4757;
-        }
-        .standings-list {
-            list-style: none;
-        }
-        .standings-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .standings-list li:first-child {
-            background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.05) 100%);
-            border: 1px solid rgba(255,215,0,0.3);
-        }
-        .standings-list .rank {
-            font-weight: 700;
-            font-size: 18px;
-            margin-right: 10px;
-        }
-        .standings-list .rank-1 { color: #ffd700; }
-        .standings-list .rank-2 { color: #c0c0c0; }
-        .standings-list .rank-3 { color: #cd7f32; }
-        .standings-list .score {
-            font-weight: 600;
-        }
-        .multiplier-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 5px;
-        }
-        .mult-2x { background: rgba(255,193,7,0.3); color: #ffc107; }
-        .mult-3x { background: rgba(255,152,0,0.3); color: #ff9800; }
-        .mult-4x { background: rgba(244,67,54,0.3); color: #f44336; }
-        .game-history {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .game-history-item {
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .game-history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .game-history-text {
-            flex: 1;
-        }
-        .game-history-commentary {
-            color: #aaa;
-            font-size: 12px;
-            font-style: italic;
-            padding-top: 5px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .game-history-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .btn-small {
-            padding: 4px 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-edit {
-            background: rgba(0,217,255,0.3);
-            color: #00d9ff;
-        }
-        .btn-edit:hover {
-            background: rgba(0,217,255,0.5);
-        }
-        .btn-delete {
-            background: rgba(244,67,54,0.3);
-            color: #f44336;
-        }
-        .btn-delete:hover {
-            background: rgba(244,67,54,0.5);
-        }
-        .edit-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .edit-modal.active {
-            display: flex;
-        }
-        .edit-modal-content {
-            background: #1a1a2e;
-            border-radius: 15px;
-            padding: 25px;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .edit-modal-content h3 {
-            color: #00d9ff;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .edit-modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .info-box {
-            background: rgba(0,217,255,0.1);
-            border: 1px solid rgba(0,217,255,0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .info-box code {
-            background: rgba(0,0,0,0.3);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #00d9ff;
-        }
-        .commentary-box {
-            background: rgba(0,217,255,0.05);
-            border: 1px solid rgba(0,217,255,0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .commentary-box h4 {
-            color: #00d9ff;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .hot-streak { color: #ff6b6b; }
-        .cold-streak { color: #4ecdc4; }
-        .tight-race { color: #ffe66d; }
-        .dollar-mode {
-            background: rgba(76, 175, 80, 0.2);
-            border-color: rgba(76, 175, 80, 0.4);
-        }
-        .dollar-mode h2 {
-            color: #4caf50;
-        }
-        .dollar-mode h4 {
-            color: #4caf50;
-        }
-        .error-message {
-            background: rgba(244,67,54,0.2);
-            border: 1px solid rgba(244,67,54,0.4);
-            color: #ff6b6b;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 13px;
-            display: none;
+            overflow-x: hidden;
         }
 
-        /* ── Voice Input ── */
-        .voice-section {
-            background: rgba(0,217,255,0.07);
-            border: 1px solid rgba(0,217,255,0.25);
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin-bottom: 18px;
+        /* ── HEADER ── */
+        .header {
+            text-align: center;
+            padding: 28px 20px 20px;
+            border-bottom: 1px solid var(--border-gold);
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%);
         }
-        .voice-section h3 {
-            color: #00d9ff;
+        .header-subtitle {
+            font-family: 'IM Fell English', serif;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 8px;
+        }
+        .header-chinese {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            text-shadow: 0 2px 20px rgba(201,168,76,0.4);
+            letter-spacing: 8px;
+        }
+        .header-english {
+            font-family: 'IM Fell English', serif;
             font-size: 15px;
-            margin-bottom: 10px;
+            letter-spacing: 6px;
+            color: var(--gold-dim);
+            margin-top: 6px;
         }
-        .step-dot {
-            width: 12px; height: 12px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.15);
-            transition: all 0.3s;
+        .header-byline {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(201,168,76,0.35);
+            margin-top: 10px;
         }
-        .step-dot.active   { background: #00d9ff; box-shadow: 0 0 8px #00d9ff; }
-        .step-dot.done     { background: #00ff88; }
 
-        .lang-btn {
+        /* ── SUIT DIVIDER ── */
+        .suit-divider {
+            text-align: center;
+            color: var(--gold-dim);
+            font-size: 14px;
+            letter-spacing: 12px;
+            padding: 8px 0;
+            opacity: 0.6;
+        }
+
+        /* ── TABS ── */
+        .tab-bar {
+            display: flex;
+            background: rgba(0,0,0,0.25);
+            border-bottom: 1px solid var(--border-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .tab-btn {
             flex: 1;
-            padding: 8px 12px;
-            border: 1px solid rgba(0,217,255,0.3);
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
-            color: #888;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 13px 4px 11px;
+            background: transparent;
+            border: none;
+            color: var(--cream-dim);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             cursor: pointer;
+            border-bottom: 2px solid transparent;
             transition: all 0.2s;
         }
-        .lang-btn.lang-active {
-            background: rgba(0,217,255,0.2);
-            border-color: #00d9ff;
-            color: #00d9ff;
+        .tab-btn.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+            background: rgba(201,168,76,0.05);
         }
-        .voice-hint {
+        .tab-icon { font-size: 15px; display: block; margin-bottom: 2px; }
+
+        /* ── PANELS ── */
+        .panel { display: none; padding: 16px 14px 100px; }
+        .panel.active { display: block; }
+
+        /* ── RULES STRIP ── */
+        .rules-strip {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-felt);
+            border-radius: var(--radius);
+            padding: 11px 14px;
+            margin-bottom: 16px;
             font-size: 12px;
-            color: #888;
-            margin-bottom: 12px;
-            line-height: 1.5;
+            color: var(--cream-dim);
+            line-height: 1.7;
         }
-        .voice-hint code {
-            background: rgba(0,0,0,0.3);
-            padding: 1px 5px;
-            border-radius: 4px;
-            color: #00d9ff;
+        .rules-strip strong { color: var(--cream); }
+        .badge {
+            display: inline-block;
+            padding: 1px 7px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .b2x { background: rgba(201,168,76,0.15); color: var(--gold); }
+        .b3x { background: rgba(201,100,76,0.2);  color: #e07050; }
+        .b4x { background: rgba(192,57,43,0.25);  color: var(--red-suit); }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-family: 'IM Fell English', serif;
             font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 10px;
+            padding-left: 2px;
         }
-        .btn-voice {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
+
+        /* ── PLAYER ROW ── */
+        .player-row {
+            background: var(--green-card);
+            border-radius: var(--radius);
             padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-felt);
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .player-row.has-value  { border-color: rgba(201,168,76,0.25); }
+        .player-row.is-winner  {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, var(--green-card) 60%);
+        }
+
+        .player-row-top {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .player-name-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .player-suit {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-gold);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .player-name-input {
+            background: transparent;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            width: 100%;
+            outline: none;
+            min-width: 0;
+        }
+        .player-name-input::placeholder { color: var(--gold-dim); }
+
+        /* Winner toggle */
+        .winner-toggle {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .winner-toggle.active {
+            background: rgba(201,168,76,0.2);
+            border-color: var(--gold);
+        }
+        .winner-toggle input { display: none; }
+        .winner-toggle-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 1px;
+            color: var(--gold-dim);
+        }
+        .winner-toggle.active .winner-toggle-label { color: var(--gold); }
+
+        /* Number picker */
+        .num-picker {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .num-btn {
+            aspect-ratio: 1;
+            border: 1px solid rgba(201,168,76,0.15);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+            color: var(--cream-dim);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
-            color: #000;
-            letter-spacing: 0.5px;
+            transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .btn-voice:active { transform: scale(0.97); }
-        .btn-voice.listening {
-            background: linear-gradient(135deg, #ff4757 0%, #c0392b 100%);
-            color: #fff;
-            animation: pulse-mic 1.2s infinite;
+        .num-btn:active { transform: scale(0.88); }
+        .num-btn.selected {
+            background: var(--gold);
+            border-color: var(--gold-light);
+            color: var(--green-dark);
         }
-        @keyframes pulse-mic {
-            0%,100% { box-shadow: 0 0 0 0 rgba(255,71,87,0.5); }
-            50%      { box-shadow: 0 0 0 10px rgba(255,71,87,0); }
+        .num-btn.zero-btn.selected {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-color: var(--gold-light);
+            color: var(--green-dark);
+            font-size: 16px;
         }
-        .voice-transcript {
-            margin-top: 12px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
+
+        /* ── SUBMIT BTN ── */
+        .submit-btn {
+            width: 100%; padding: 17px;
+            border: none; border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--green-dark);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+            cursor: pointer; margin-top: 8px; transition: all 0.2s;
+        }
+        .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+        .clear-btn {
+            width: 100%; padding: 13px;
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--cream-dim);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; margin-top: 8px;
+        }
+
+        .error-msg {
+            background: rgba(192,57,43,0.12);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: #e07060;
             padding: 10px 14px;
-            font-size: 13px;
-            color: #ccc;
-            min-height: 36px;
-            line-height: 1.5;
-            display: none;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .voice-transcript.active { display: block; }
-        .voice-result {
+            border-radius: 10px;
             margin-top: 10px;
             font-size: 13px;
-            padding: 10px 14px;
-            border-radius: 8px;
             display: none;
+        }
+
+        /* ── VOICE ── */
+        .voice-card {
+            background: var(--green-card);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-felt);
+        }
+        .voice-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .voice-title {
+            font-family: 'IM Fell English', serif;
+            font-size: 13px; color: var(--gold);
+        }
+        .lang-pills { display: flex; gap: 6px; }
+        .lang-pill {
+            padding: 4px 10px; border-radius: 20px;
+            border: 1px solid var(--border-gold);
+            background: rgba(0,0,0,0.2);
+            color: var(--cream-dim);
+            font-size: 11px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .lang-pill.active {
+            background: rgba(201,168,76,0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .voice-guide { display: none; margin-bottom: 10px; }
+        .voice-question {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-family: 'IM Fell English', serif;
+            font-size: 15px; color: var(--gold);
+            text-align: center; margin-bottom: 8px;
+        }
+        .step-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+        .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(201,168,76,0.15); transition: all 0.3s; }
+        .step-dot.active { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+        .step-dot.done   { background: var(--gold-dim); }
+        .voice-heard {
+            text-align: center; font-size: 20px; font-weight: 700;
+            color: var(--cream); min-height: 30px; margin-bottom: 4px;
+        }
+        .voice-hint-text { font-size: 12px; color: var(--cream-dim); margin-bottom: 10px; line-height: 1.5; }
+
+        .voice-btn-row { display: flex; gap: 8px; }
+        .btn-voice {
+            flex: 1; padding: 13px;
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.25);
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        .btn-voice.listening {
+            background: rgba(192,57,43,0.15);
+            border-color: rgba(192,57,43,0.4);
+            color: #e07060;
+            animation: pulse-ring 1.4s infinite;
+        }
+        @keyframes pulse-ring {
+            0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.3); }
+            50%      { box-shadow: 0 0 0 8px rgba(192,57,43,0); }
+        }
+        .btn-skip {
+            padding: 13px 14px; border-radius: 10px;
+            border: 1px solid var(--border-felt);
+            background: transparent; color: var(--cream-dim);
+            font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+            cursor: pointer; display: none;
+        }
+        .voice-result {
+            margin-top: 10px; border-radius: 10px; padding: 10px 14px;
+            font-size: 13px; display: none;
         }
         .voice-result.success {
-            background: rgba(0,255,136,0.12);
-            border: 1px solid rgba(0,255,136,0.3);
-            color: #00ff88;
+            background: rgba(201,168,76,0.1);
+            border: 1px solid rgba(201,168,76,0.3);
+            color: var(--gold);
             display: block;
         }
         .voice-result.error {
-            background: rgba(255,71,87,0.12);
-            border: 1px solid rgba(255,71,87,0.3);
-            color: #ff6b6b;
+            background: rgba(192,57,43,0.1);
+            border: 1px solid rgba(192,57,43,0.3);
+            color: #e07060;
             display: block;
+        }
+
+        /* ── SCORES TABLE ── */
+        .felt-card {
+            background: var(--green-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border-felt);
+        }
+        .felt-card h2 {
+            font-family: 'IM Fell English', serif;
+            font-size: 13px; letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 14px;
+        }
+        .scores-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .scores-table th {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--gold-dim); padding: 0 0 10px; text-align: center;
+            font-family: 'IM Fell English', serif;
+        }
+        .scores-table td {
+            padding: 10px 4px; text-align: center;
+            border-top: 1px solid var(--border-felt);
+            color: var(--cream-dim);
+        }
+        .scores-table .pname { text-align: left; color: var(--cream); font-weight: 600; }
+        .pos { color: var(--gold); font-weight: 700; }
+        .neg { color: var(--red-suit); font-weight: 700; }
+        .mult-badge {
+            font-size: 10px; font-weight: 700; padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* ── STANDINGS ── */
+        .standings-list { list-style: none; }
+        .standing-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            background: var(--green-card);
+            margin-bottom: 8px;
+            border: 1px solid var(--border-felt);
+        }
+        .standing-row:first-child {
+            background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, var(--green-card) 70%);
+            border-color: var(--border-gold);
+        }
+        .standing-rank {
+            font-family: 'IM Fell English', serif;
+            font-size: 22px; width: 28px; text-align: center;
+        }
+        .r1 { color: var(--gold); }
+        .r2 { color: #aaa; }
+        .r3 { color: #9a7a4a; }
+        .standing-name { flex: 1; font-size: 15px; font-weight: 600; color: var(--cream); }
+        .standing-score { font-size: 17px; font-weight: 700; }
+
+        /* ── DOLLAR CARD ── */
+        .dollar-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .dollar-label { font-size: 12px; color: var(--gold-dim); white-space: nowrap; font-family: 'IM Fell English', serif; }
+        .dollar-input {
+            flex: 1; padding: 11px 14px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            color: var(--cream); font-family: 'DM Sans', sans-serif;
+            font-size: 18px; font-weight: 700; text-align: center;
+        }
+        .dollar-input:focus { outline: none; border-color: var(--gold); }
+        .toggle-row { display: flex; gap: 8px; }
+        .toggle-btn {
+            flex: 1; padding: 11px;
+            border-radius: 10px; border: 1px solid var(--border-gold);
+            background: transparent; color: var(--cream-dim);
+            font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .toggle-btn.active {
+            background: rgba(201,168,76,0.15);
+            border-color: var(--gold); color: var(--gold);
+        }
+
+        /* ── HISTORY ── */
+        .history-item {
+            background: var(--green-card);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-felt);
+        }
+        .history-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .history-game-num {
+            font-family: 'IM Fell English', serif;
+            font-size: 16px; color: var(--gold);
+        }
+        .history-actions { display: flex; gap: 6px; }
+        .btn-sm {
+            padding: 5px 12px; border-radius: 8px; border: none;
+            font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
+        }
+        .btn-edit-sm { background: rgba(201,168,76,0.15); color: var(--gold); }
+        .btn-del-sm  { background: rgba(192,57,43,0.15);  color: var(--red-suit); }
+
+        .history-scores {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 6px;
+        }
+        .history-score-cell {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px; padding: 8px 4px; text-align: center;
+            border: 1px solid var(--border-felt);
+        }
+        .hname  { font-size: 10px; color: var(--cream-dim); margin-bottom: 3px; }
+        .hcards { font-size: 18px; font-weight: 700; color: var(--cream); }
+        .hwinner { color: var(--gold); }
+        .commentary {
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border-felt);
+            font-size: 12px; color: var(--cream-dim); line-height: 1.5;
+            font-family: 'IM Fell English', serif; font-style: italic;
+        }
+
+        /* ── COMMENTARY BOX ── */
+        .commentary-box {
+            background: rgba(0,0,0,0.15);
+            border: 1px solid var(--border-felt);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 13px; color: var(--cream-dim);
+            line-height: 1.6; margin-top: 12px; display: none;
+        }
+        .tight-race { color: var(--gold); font-weight: 700; }
+        .hot-streak { color: #e07050; font-weight: 700; }
+
+        /* ── DANGER ── */
+        .danger-btn {
+            width: 100%; padding: 13px; border-radius: var(--radius);
+            border: 1px solid rgba(192,57,43,0.3);
+            background: rgba(192,57,43,0.07);
+            color: #e07060; font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 8px;
+        }
+
+        /* ── MODAL BOTTOM SHEET ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85); z-index: 200;
+            align-items: flex-end;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-sheet {
+            background: var(--green-mid);
+            border-radius: 20px 20px 0 0;
+            padding: 20px 14px 44px;
+            width: 100%; max-height: 92vh; overflow-y: auto;
+            border-top: 1px solid var(--border-gold);
+        }
+        .modal-handle {
+            width: 36px; height: 4px;
+            background: var(--border-gold);
+            border-radius: 2px; margin: 0 auto 18px;
+        }
+        .modal-title {
+            font-family: 'IM Fell English', serif;
+            font-size: 20px; color: var(--gold); margin-bottom: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎴 Stony 鋤大弟 Big 2</h1>
-        <p class="subtitle">Card Game Score Tracker</p>
-        <p style="text-align:center; color: #555; font-size: 11px; margin-top: -22px; margin-bottom: 24px; letter-spacing: 0.5px;">Built by SBB</p>
 
-        <div class="info-box">
-            <strong>Rules:</strong> Winner = 0 cards. Score = card differences vs all players.<br>
-            <strong>Multipliers:</strong> <span class="multiplier-badge mult-2x">8-9 cards = 2x</span> 
-            <span class="multiplier-badge mult-3x">10-12 = 3x</span> 
-            <span class="multiplier-badge mult-4x">13 = 4x</span><br>
-            <strong>Goal:</strong> Highest cumulative score wins!
+<!-- HEADER -->
+<div class="header">
+    <div class="header-subtitle">Stony Brook</div>
+    <div class="header-chinese">鋤大弟</div>
+    <div class="header-english">B i g &nbsp; 2</div>
+    <div class="header-byline">Built by SBB</div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('entry')">
+        <span class="tab-icon">♠</span>Entry
+    </button>
+    <button class="tab-btn" onclick="showTab('scores')">
+        <span class="tab-icon">♦</span>Scores
+    </button>
+    <button class="tab-btn" onclick="showTab('standings')">
+        <span class="tab-icon">♥</span>Standings
+    </button>
+    <button class="tab-btn" onclick="showTab('history')">
+        <span class="tab-icon">♣</span>History
+    </button>
+</div>
+
+<!-- ════════════════════════════════ -->
+<!-- ENTRY TAB                        -->
+<!-- ════════════════════════════════ -->
+<div class="panel active" id="tab-entry">
+
+    <div class="rules-strip">
+        <strong>Winner = 0 cards</strong> &nbsp;·&nbsp;
+        <span class="badge b2x">8–9 = 2×</span>
+        <span class="badge b3x">10–12 = 3×</span>
+        <span class="badge b4x">13 = 4×</span>
+        &nbsp;·&nbsp; Highest cumulative score wins
+    </div>
+
+    <!-- Voice -->
+    <div class="voice-card">
+        <div class="voice-header">
+            <span class="voice-title">🎤 Voice Entry</span>
+            <div class="lang-pills">
+                <button id="langEn" class="lang-pill active" onclick="setLang('en')">🇺🇸 EN</button>
+                <button id="langZh" class="lang-pill" onclick="setLang('zh')">🇭🇰 粵</button>
+            </div>
         </div>
-
-        <!-- Voice Input Section -->
-        <div class="voice-section">
-            <h3>🎤 Voice Entry</h3>
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-                <button id="langEn" class="lang-btn lang-active" onclick="setLang('en')">🇺🇸 English</button>
-                <button id="langZh" class="lang-btn" onclick="setLang('zh')">🇭🇰 廣東話</button>
+        <div class="voice-guide" id="voiceGuide">
+            <div class="voice-question" id="voiceQuestion"></div>
+            <div class="step-dots">
+                <div class="step-dot" id="dot0"></div>
+                <div class="step-dot" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
             </div>
-
-            <!-- Guided step UI (hidden until started) -->
-            <div id="voiceGuide" style="display:none;">
-                <div id="voiceQuestion" style="
-                    background: rgba(0,217,255,0.1);
-                    border: 1px solid rgba(0,217,255,0.3);
-                    border-radius: 10px;
-                    padding: 14px 16px;
-                    margin-bottom: 12px;
-                    font-size: 16px;
-                    color: #00d9ff;
-                    font-weight: 600;
-                    text-align: center;
-                    min-height: 52px;
-                "></div>
-                <!-- Step dots -->
-                <div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px;">
-                    <div class="step-dot" id="dot0"></div>
-                    <div class="step-dot" id="dot1"></div>
-                    <div class="step-dot" id="dot2"></div>
-                    <div class="step-dot" id="dot3"></div>
-                </div>
-                <div class="voice-transcript active" id="voiceTranscript" style="text-align:center;font-size:18px;font-weight:700;min-height:40px;"></div>
-            </div>
-
-            <p class="voice-hint" id="voiceHint">
-                <span id="voiceHintEn">Tap Start — it will ask for each player's score one by one. Just say the number!</span>
-                <span id="voiceHintZh" style="display:none;">撳開始，逐個玩家問你，你只需講數字！</span>
-            </p>
-
-            <div style="display:flex;gap:8px;">
-                <button class="btn-voice" id="voiceBtn" onclick="voiceBtnTap()" style="flex:1;">
-                    <span id="voiceBtnIcon">🎤</span>
-                    <span id="voiceBtnText">Start Voice Entry</span>
-                </button>
-                <button id="voiceSkipBtn" onclick="voiceSkip()" style="
-                    display:none;
-                    padding:14px 18px;
-                    border:1px solid rgba(255,255,255,0.15);
-                    border-radius:10px;
-                    background:rgba(255,255,255,0.07);
-                    color:#aaa;
-                    font-size:14px;
-                    cursor:pointer;
-                ">Skip</button>
-            </div>
-            <div class="voice-result" id="voiceResult"></div>
+            <div class="voice-heard" id="voiceTranscript"></div>
         </div>
-
-        <div class="card">
-            <h2>📝 Enter Game Results</h2>
-            <div class="players-grid">
-                <div class="player-input">
-                    <label>Player 1</label>
-                    <input type="text" id="name1" placeholder="Enter name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="p1" min="0" max="13" placeholder="Cards (0-13)">
-                    <div class="winner-check">
-                        <input type="checkbox" id="p1win">
-                        <label for="p1win">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 2</label>
-                    <input type="text" id="name2" placeholder="Enter name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="p2" min="0" max="13" placeholder="Cards (0-13)">
-                    <div class="winner-check">
-                        <input type="checkbox" id="p2win">
-                        <label for="p2win">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 3</label>
-                    <input type="text" id="name3" placeholder="Enter name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="p3" min="0" max="13" placeholder="Cards (0-13)">
-                    <div class="winner-check">
-                        <input type="checkbox" id="p3win">
-                        <label for="p3win">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 4</label>
-                    <input type="text" id="name4" placeholder="Enter name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="p4" min="0" max="13" placeholder="Cards (0-13)">
-                    <div class="winner-check">
-                        <input type="checkbox" id="p4win">
-                        <label for="p4win">Winner</label>
-                    </div>
-                </div>
-            </div>
-            <div class="error-message" id="inputError"></div>
-            <button class="btn btn-primary" onclick="calculateGame()" style="margin-top: 20px;">
-                Calculate & Add Game
+        <div class="voice-hint-text" id="voiceHint">
+            <span id="voiceHintEn">Tap Start — asks each player one by one. Just say the number!</span>
+            <span id="voiceHintZh" style="display:none;">撳開始，逐個問，你只需講數字！</span>
+        </div>
+        <div class="voice-btn-row">
+            <button class="btn-voice" id="voiceBtn" onclick="voiceBtnTap()">
+                <span id="voiceBtnIcon">🎤</span>
+                <span id="voiceBtnText">Start</span>
             </button>
-            <button class="btn btn-secondary" onclick="resetInputs()">
-                Clear Inputs
-            </button>
+            <button class="btn-skip" id="voiceSkipBtn" onclick="voiceSkip()">Skip</button>
         </div>
+        <div class="voice-result" id="voiceResult"></div>
+    </div>
 
-        <div class="card">
-            <h2>📊 Current Game Scores</h2>
-            <table class="score-table" id="currentScores">
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Cards</th>
-                        <th>Multiplier</th>
-                        <th>Effective</th>
-                        <th>Round Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="5" style="color:#888;">No game calculated yet</td></tr>
-                </tbody>
-            </table>
-            <div class="commentary-box" id="gameCommentary" style="display:none;">
-                <h4>💬 Game Commentary</h4>
-                <div id="gameCommentaryText"></div>
+    <div class="section-label">Enter Results</div>
+
+    <!-- Players -->
+    <div class="player-row" id="row1">
+        <div class="player-row-top">
+            <div class="player-name-wrap">
+                <div class="player-suit" id="av1">♠</div>
+                <input class="player-name-input" id="name1" placeholder="Player 1" oninput="onNameChange(1)">
             </div>
+            <label class="winner-toggle" id="wtog1" onclick="toggleWinner(1)">
+                <input type="checkbox" id="p1win">
+                <span>👑</span><span class="winner-toggle-label">WON</span>
+            </label>
         </div>
+        <div class="num-picker" id="picker1"></div>
+        <input type="hidden" id="p1" value="">
+    </div>
 
-        <div class="card" id="standingsCard">
-            <h2>🏆 Standings</h2>
-            <ul class="standings-list" id="standings">
-                <li><span class="rank">-</span><span>No games played</span><span class="score">-</span></li>
-            </ul>
-            <div class="commentary-box" id="standingsCommentary" style="display:none;">
-                <h4>📈 Race Analysis</h4>
-                <div id="standingsCommentaryText"></div>
+    <div class="player-row" id="row2">
+        <div class="player-row-top">
+            <div class="player-name-wrap">
+                <div class="player-suit" id="av2" style="color:var(--red-suit)">♥</div>
+                <input class="player-name-input" id="name2" placeholder="Player 2" oninput="onNameChange(2)">
             </div>
+            <label class="winner-toggle" id="wtog2" onclick="toggleWinner(2)">
+                <input type="checkbox" id="p2win">
+                <span>👑</span><span class="winner-toggle-label">WON</span>
+            </label>
         </div>
+        <div class="num-picker" id="picker2"></div>
+        <input type="hidden" id="p2" value="">
+    </div>
 
-        <div class="card" id="dollarCard">
-            <h2>💰 Dollar Conversion</h2>
-            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 200px;">
-                    <label style="display: block; margin-bottom: 8px; color: #aaa; font-weight: 600;">$ per Point</label>
-                    <input type="number" id="dollarPerPoint" min="0" step="0.01" placeholder="2.00" value="2" style="width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; background: rgba(255,255,255,0.05); color: #fff; font-size: 18px;">
-                </div>
-                <button class="btn btn-primary" onclick="updateDollarDisplay()" style="flex: 1; min-width: 150px; margin-top: 26px;">
-                    💵 Show $ Standings
-                </button>
-                <button class="btn btn-secondary" onclick="showPointStandings()" style="flex: 1; min-width: 150px; margin-top: 26px;">
-                    📊 Show Points
-                </button>
+    <div class="player-row" id="row3">
+        <div class="player-row-top">
+            <div class="player-name-wrap">
+                <div class="player-suit" id="av3" style="color:var(--red-suit)">♦</div>
+                <input class="player-name-input" id="name3" placeholder="Player 3" oninput="onNameChange(3)">
             </div>
-            <p style="margin-top: 10px; color: #888; font-size: 13px;">Enter dollar amount per point, then toggle between points and dollars.</p>
+            <label class="winner-toggle" id="wtog3" onclick="toggleWinner(3)">
+                <input type="checkbox" id="p3win">
+                <span>👑</span><span class="winner-toggle-label">WON</span>
+            </label>
         </div>
+        <div class="num-picker" id="picker3"></div>
+        <input type="hidden" id="p3" value="">
+    </div>
 
-        <div class="card">
-            <h2>📜 Game History</h2>
-            <div class="game-history" id="gameHistory">
-                <div class="game-history-item" style="color:#888;">No games recorded</div>
+    <div class="player-row" id="row4">
+        <div class="player-row-top">
+            <div class="player-name-wrap">
+                <div class="player-suit" id="av4">♣</div>
+                <input class="player-name-input" id="name4" placeholder="Player 4" oninput="onNameChange(4)">
             </div>
-            <button class="btn btn-secondary" onclick="clearAllData()" style="margin-top: 15px;">
-                Reset All Data
-            </button>
+            <label class="winner-toggle" id="wtog4" onclick="toggleWinner(4)">
+                <input type="checkbox" id="p4win">
+                <span>👑</span><span class="winner-toggle-label">WON</span>
+            </label>
+        </div>
+        <div class="num-picker" id="picker4"></div>
+        <input type="hidden" id="p4" value="">
+    </div>
+
+    <div class="error-msg" id="inputError"></div>
+    <button class="submit-btn" onclick="calculateGame()">♠ Add Game</button>
+    <button class="clear-btn" onclick="resetInputs()">Clear</button>
+</div>
+
+<!-- ════════════════════════════════ -->
+<!-- SCORES TAB                       -->
+<!-- ════════════════════════════════ -->
+<div class="panel" id="tab-scores">
+    <div class="felt-card">
+        <h2>Last Game</h2>
+        <table class="scores-table" id="currentScores">
+            <thead>
+                <tr>
+                    <th style="text-align:left;">Player</th>
+                    <th>Cards</th><th>Mult</th><th>Eff.</th><th>Round</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" style="color:var(--cream-dim);padding:20px 0;font-size:13px;">No game yet</td></tr>
+            </tbody>
+        </table>
+        <div class="commentary-box" id="gameCommentary">
+            <div id="gameCommentaryText"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════ -->
+<!-- STANDINGS TAB                    -->
+<!-- ════════════════════════════════ -->
+<div class="panel" id="tab-standings">
+    <div class="felt-card">
+        <h2>Dollar Conversion</h2>
+        <div class="dollar-row">
+            <span class="dollar-label">$ per Point</span>
+            <input class="dollar-input" type="number" id="dollarPerPoint" value="2" min="0" step="0.01">
+        </div>
+        <div class="toggle-row">
+            <button class="toggle-btn active" id="btnPoints" onclick="showPointStandings()">📊 Points</button>
+            <button class="toggle-btn" id="btnDollars" onclick="updateDollarDisplay()">💵 Dollars</button>
         </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="edit-modal" id="editModal">
-        <div class="edit-modal-content">
-            <h3 id="editModalTitle">Edit Game</h3>
-            <div class="players-grid">
-                <div class="player-input">
-                    <label>Player 1</label>
-                    <input type="text" id="editName1" placeholder="Name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="editCards1" min="0" max="13" placeholder="Cards">
-                    <div class="winner-check">
-                        <input type="checkbox" id="editWin1">
-                        <label for="editWin1">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 2</label>
-                    <input type="text" id="editName2" placeholder="Name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="editCards2" min="0" max="13" placeholder="Cards">
-                    <div class="winner-check">
-                        <input type="checkbox" id="editWin2">
-                        <label for="editWin2">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 3</label>
-                    <input type="text" id="editName3" placeholder="Name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="editCards3" min="0" max="13" placeholder="Cards">
-                    <div class="winner-check">
-                        <input type="checkbox" id="editWin3">
-                        <label for="editWin3">Winner</label>
-                    </div>
-                </div>
-                <div class="player-input">
-                    <label>Player 4</label>
-                    <input type="text" id="editName4" placeholder="Name" style="margin-bottom:8px;font-size:14px;">
-                    <input type="number" id="editCards4" min="0" max="13" placeholder="Cards">
-                    <div class="winner-check">
-                        <input type="checkbox" id="editWin4">
-                        <label for="editWin4">Winner</label>
-                    </div>
-                </div>
-            </div>
-            <div class="error-message" id="editError"></div>
-            <div class="edit-modal-buttons">
-                <button class="btn btn-primary" onclick="saveEditGame()">Save Changes</button>
-                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-            </div>
-        </div>
+    <ul class="standings-list" id="standings">
+        <li class="standing-row">
+            <span class="standing-rank">–</span>
+            <span class="standing-name">No games yet</span>
+            <span class="standing-score">–</span>
+        </li>
+    </ul>
+    <div class="commentary-box" id="standingsCommentary" style="display:none;">
+        <div id="standingsCommentaryText"></div>
     </div>
+</div>
 
-    <script>
-        let gameState = {
-            games: [],
-            totals: [0, 0, 0, 0],
-            playerNames: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
-            dollarPerPoint: 2
-        };
+<!-- ════════════════════════════════ -->
+<!-- HISTORY TAB                      -->
+<!-- ════════════════════════════════ -->
+<div class="panel" id="tab-history">
+    <div id="gameHistory">
+        <div style="color:var(--cream-dim);font-size:13px;padding:20px 0;font-family:'IM Fell English',serif;font-style:italic;">No games recorded yet</div>
+    </div>
+    <button class="danger-btn" onclick="clearAllData()">✕ Reset All Data</button>
+</div>
 
-        let showDollars = false;
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="editModalTitle">Edit Game</div>
 
-        // Load saved data
-        function loadData() {
-            const saved = localStorage.getItem('big2scorecard');
-            if (saved) {
-                gameState = JSON.parse(saved);
-                for (let i = 0; i < 4; i++) {
-                    const nameInput = document.getElementById(`name${i + 1}`);
-                    if (nameInput && gameState.playerNames[i]) {
-                        nameInput.value = gameState.playerNames[i];
-                    }
-                }
-                const dollarInput = document.getElementById('dollarPerPoint');
-                if (dollarInput && gameState.dollarPerPoint) {
-                    dollarInput.value = gameState.dollarPerPoint;
-                }
-                updateDisplay();
-            }
+        <div class="player-row" id="editRow1" style="margin-bottom:10px;">
+            <div class="player-row-top">
+                <div class="player-name-wrap">
+                    <div class="player-suit">♠</div>
+                    <input class="player-name-input" id="editName1" placeholder="Player 1">
+                </div>
+                <label class="winner-toggle" id="ewtog1" onclick="toggleEditWinner(1)">
+                    <input type="checkbox" id="editWin1"><span>👑</span><span class="winner-toggle-label">WON</span>
+                </label>
+            </div>
+            <div class="num-picker" id="editPicker1"></div>
+            <input type="hidden" id="editCards1" value="">
+        </div>
+
+        <div class="player-row" id="editRow2" style="margin-bottom:10px;">
+            <div class="player-row-top">
+                <div class="player-name-wrap">
+                    <div class="player-suit" style="color:var(--red-suit)">♥</div>
+                    <input class="player-name-input" id="editName2" placeholder="Player 2">
+                </div>
+                <label class="winner-toggle" id="ewtog2" onclick="toggleEditWinner(2)">
+                    <input type="checkbox" id="editWin2"><span>👑</span><span class="winner-toggle-label">WON</span>
+                </label>
+            </div>
+            <div class="num-picker" id="editPicker2"></div>
+            <input type="hidden" id="editCards2" value="">
+        </div>
+
+        <div class="player-row" id="editRow3" style="margin-bottom:10px;">
+            <div class="player-row-top">
+                <div class="player-name-wrap">
+                    <div class="player-suit" style="color:var(--red-suit)">♦</div>
+                    <input class="player-name-input" id="editName3" placeholder="Player 3">
+                </div>
+                <label class="winner-toggle" id="ewtog3" onclick="toggleEditWinner(3)">
+                    <input type="checkbox" id="editWin3"><span>👑</span><span class="winner-toggle-label">WON</span>
+                </label>
+            </div>
+            <div class="num-picker" id="editPicker3"></div>
+            <input type="hidden" id="editCards3" value="">
+        </div>
+
+        <div class="player-row" id="editRow4" style="margin-bottom:10px;">
+            <div class="player-row-top">
+                <div class="player-name-wrap">
+                    <div class="player-suit">♣</div>
+                    <input class="player-name-input" id="editName4" placeholder="Player 4">
+                </div>
+                <label class="winner-toggle" id="ewtog4" onclick="toggleEditWinner(4)">
+                    <input type="checkbox" id="editWin4"><span>👑</span><span class="winner-toggle-label">WON</span>
+                </label>
+            </div>
+            <div class="num-picker" id="editPicker4"></div>
+            <input type="hidden" id="editCards4" value="">
+        </div>
+
+        <div class="error-msg" id="editError"></div>
+        <button class="submit-btn" onclick="saveEditGame()">Save Changes</button>
+        <button class="clear-btn" onclick="closeEditModal()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // ── STATE ──────────────────────────────────────────────
+    let gameState = {
+        games: [], totals: [0,0,0,0],
+        playerNames: ['Player 1','Player 2','Player 3','Player 4'],
+        dollarPerPoint: 2
+    };
+    let showDollars = false;
+
+    // ── NUMBER PICKERS ─────────────────────────────────────
+    function buildPicker(containerId, hiddenId, winCheckId, rowId, isEdit) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        for (let n = 0; n <= 13; n++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'num-btn' + (n === 0 ? ' zero-btn' : '');
+            btn.textContent = n === 0 ? '👑' : n;
+            btn.dataset.val = n;
+            btn.onclick = () => selectNum(n, hiddenId, winCheckId, rowId, containerId, isEdit);
+            container.appendChild(btn);
         }
+    }
 
-        // Save data
-        function saveData() {
-            for (let i = 0; i < 4; i++) {
-                const nameInput = document.getElementById(`name${i + 1}`);
-                if (nameInput && nameInput.value.trim()) {
-                    gameState.playerNames[i] = nameInput.value.trim();
-                }
-            }
-            const dollarInput = document.getElementById('dollarPerPoint');
-            if (dollarInput) {
-                gameState.dollarPerPoint = parseFloat(dollarInput.value) || 0;
-            }
-            localStorage.setItem('big2scorecard', JSON.stringify(gameState));
-        }
+    function selectNum(n, hiddenId, winCheckId, rowId, pickerId, isEdit) {
+        document.getElementById(hiddenId).value = n;
+        const winEl = document.getElementById(winCheckId);
+        winEl.checked = (n === 0);
+        const row = document.getElementById(rowId);
+        row.classList.toggle('is-winner', n === 0);
+        row.classList.toggle('has-value', true);
+        document.getElementById(pickerId).querySelectorAll('.num-btn')
+            .forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) === n));
+        const togSuffix = isEdit
+            ? winCheckId.replace('editWin','')
+            : winCheckId.replace('p','').replace('win','');
+        const tog = document.getElementById((isEdit ? 'ewtog' : 'wtog') + togSuffix);
+        if (tog) tog.classList.toggle('active', n === 0);
+    }
 
-        // Get multiplier
-        function getMultiplier(cards) {
-            if (cards >= 13) return 4;
-            if (cards >= 10) return 3;
-            if (cards >= 8) return 2;
-            return 1;
-        }
+    function toggleWinner(i) {
+        const win = document.getElementById('p' + i + 'win');
+        if (!win.checked) selectNum(0, 'p'+i, 'p'+i+'win', 'row'+i, 'picker'+i, false);
+    }
+    function toggleEditWinner(i) {
+        const win = document.getElementById('editWin' + i);
+        if (!win.checked) selectNum(0, 'editCards'+i, 'editWin'+i, 'editRow'+i, 'editPicker'+i, true);
+    }
 
-        // Validate inputs
-        function validateInputs(prefix) {
-            const errorDiv = document.getElementById(prefix === '' ? 'inputError' : 'editError');
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = '';
-            
-            // Clear all error states
-            for (let i = 1; i <= 4; i++) {
-                const cardId = prefix === '' ? `p${i}` : `editCards${i}`;
-                document.getElementById(cardId).classList.remove('error');
-            }
-            
-            const inputs = [];
-            for (let i = 1; i <= 4; i++) {
-                const cardId = prefix === '' ? `p${i}` : `editCards${i}`;
-                const winId = prefix === '' ? `p${i}win` : `editWin${i}`;
-                
-                const cardInput = document.getElementById(cardId);
-                const winInput = document.getElementById(winId);
-                const cards = cardInput.value === '' ? null : parseInt(cardInput.value);
-                
-                // Check card range
-                if (cards !== null && (cards < 0 || cards > 13)) {
-                    cardInput.classList.add('error');
-                    errorDiv.textContent = '❌ Cards must be between 0 and 13';
-                    errorDiv.style.display = 'block';
-                    return null;
-                }
-                
-                // Winner must have 0 or empty cards
-                if (winInput.checked && cards !== null && cards !== 0) {
-                    cardInput.classList.add('error');
-                    errorDiv.textContent = '❌ Winner must have 0 cards (empty the field or enter 0)';
-                    errorDiv.style.display = 'block';
-                    return null;
-                }
-                
-                inputs.push({ cards, win: winInput.checked });
-            }
-            
-            // Check only one winner
-            const winners = inputs.filter(p => p.win);
-            if (winners.length > 1) {
-                errorDiv.textContent = '❌ Only ONE player can be the winner';
-                errorDiv.style.display = 'block';
-                return null;
-            }
-            
-            // Check at least one winner
-            if (winners.length === 0) {
-                errorDiv.textContent = '❌ Please mark the winner (player with 0 cards)';
-                errorDiv.style.display = 'block';
-                return null;
-            }
-            
-            return inputs;
-        }
+    function setPickerValue(hiddenId, winCheckId, rowId, pickerId, isEdit, val) {
+        if (val === null || val === undefined || val === '') return;
+        selectNum(parseInt(val), hiddenId, winCheckId, rowId, pickerId, isEdit);
+    }
 
-        // Generate game commentary
-        function generateGameCommentary(game) {
-            const names = gameState.playerNames;
-            const winnerName = names[game.winner - 1];
-            const scores = game.scores;
-            const cards = game.cards;
-            
-            let commentary = [];
-            
-            const winnerScore = scores[game.winner - 1];
-            if (winnerScore >= 80) {
-                commentary.push(`<strong>${winnerName}</strong> absolutely dominated this game! 🏆`);
-            } else if (winnerScore >= 50) {
-                commentary.push(`<strong>${winnerName}</strong> had a strong win! 👑`);
-            } else {
-                commentary.push(`<strong>${winnerName}</strong> edged out the competition.`);
-            }
-            
-            const minScore = Math.min(...scores);
-            const loserIdx = scores.indexOf(minScore);
-            if (minScore <= -80) {
-                commentary.push(`<strong>${names[loserIdx]}</strong> got crushed with ${cards[loserIdx]} cards! 😬`);
-            } else if (minScore <= -40) {
-                commentary.push(`<strong>${names[loserIdx]}</strong> had a rough round.`);
-            }
-            
-            const highCards = cards.map((c, i) => ({ cards: c, idx: i })).filter(x => x.cards >= 8);
-            if (highCards.length > 0) {
-                highCards.sort((a, b) => b.cards - a.cards);
-                const worst = highCards[0];
-                const mult = getMultiplier(worst.cards);
-                if (mult >= 4) {
-                    commentary.push(`That ${mult}x multiplier on <strong>${names[worst.idx]}</strong>'s ${worst.cards} cards was brutal!`);
-                } else if (mult >= 3) {
-                    commentary.push(`The ${mult}x multiplier hurt <strong>${names[worst.idx]}</strong> this round.`);
-                }
-            }
-            
-            const scoreRange = Math.max(...scores) - Math.min(...scores);
-            if (scoreRange < 50 && game.winner) {
-                commentary.push(`Close race - only ${scoreRange} points separated first from last!`);
-            }
-            
-            return commentary.join(' ');
-        }
-
-        // Generate standings commentary
-        function generateStandingsCommentary() {
-            const names = gameState.playerNames;
-            const standings = gameState.totals.map((total, i) => ({ player: i + 1, total, name: names[i] }))
-                .sort((a, b) => b.total - a.total);
-            
-            let commentary = [];
-            
-            const leader = standings[0];
-            const trailer = standings[standings.length - 1];
-            const gap = leader.total - trailer.total;
-            
-            if (gap > 150) {
-                commentary.push(`<strong>${leader.name}</strong> has a commanding lead! Others need a miracle. 😰`);
-            } else if (gap > 80) {
-                commentary.push(`<strong>${leader.name}</strong> is in control, but there's still hope.`);
-            } else if (gap < 30 && gameState.games.length >= 3) {
-                commentary.push(`<span class="tight-race">Tight race!</span> Only ${gap} points separates 1st from last.`);
-            }
-            
-            if (gameState.games.length >= 3) {
-                const recentGames = gameState.games.slice(-3);
-                const recentScores = [0, 0, 0, 0];
-                recentGames.forEach(g => {
-                    for (let i = 0; i < 4; i++) recentScores[i] += g.scores[i];
-                });
-                
-                const hotPlayer = recentScores.indexOf(Math.max(...recentScores));
-                const coldPlayer = recentScores.indexOf(Math.min(...recentScores));
-                
-                if (hotPlayer !== leader.player - 1) {
-                    commentary.push(`<span class="hot-streak">${names[hotPlayer]}</span> is on a hot streak! 🔥`);
-                }
-                if (coldPlayer !== trailer.player - 1) {
-                    commentary.push(`<span class="cold-streak">${names[coldPlayer]}</span> needs to turn it around. 📉`);
-                }
-            }
-            
-            if (gameState.games.length >= 5) {
-                const second = standings[1];
-                if (leader.total - second.total < 20) {
-                    commentary.push(`2nd place ${second.name} is within striking distance!`);
-                }
-            }
-            
-            return commentary.join(' ');
-        }
-
-        // Calculate game
-        function calculateGame() {
-            const inputs = validateInputs('');
-            if (!inputs) return;
-
-            const winnerIdx = inputs.findIndex(p => p.win);
-
-            const effective = inputs.map((p, i) => {
-                if (i === winnerIdx) return 0;
-                const cards = p.cards || 0;
-                return cards * getMultiplier(cards);
-            });
-
-            const scores = effective.map((eff, i) => {
-                let score = 0;
-                for (let j = 0; j < 4; j++) {
-                    if (i !== j) {
-                        score += effective[j] - eff;
-                    }
-                }
-                return score;
-            });
-
-            const gameNum = gameState.games.length + 1;
-            gameState.games.push({
-                game: gameNum,
-                cards: inputs.map(p => p.cards || 0),
-                effective,
-                scores,
-                winner: winnerIdx + 1
-            });
-
-            for (let i = 0; i < 4; i++) {
-                gameState.totals[i] += scores[i];
-            }
-
-            saveData();
-            updateDisplay();
-            resetInputs();
-        }
-
-        // Update display
-        function updateDisplay() {
-            const currentTable = document.getElementById('currentScores').querySelector('tbody');
-            const gameCommentaryBox = document.getElementById('gameCommentary');
-            const gameCommentaryText = document.getElementById('gameCommentaryText');
-            
-            if (gameState.games.length > 0) {
-                const lastGame = gameState.games[gameState.games.length - 1];
-                currentTable.innerHTML = lastGame.scores.map((score, i) => {
-                    const cards = lastGame.cards[i];
-                    const mult = i + 1 === lastGame.winner ? '-' : getMultiplier(cards) + 'x';
-                    const multClass = mult === '2x' ? 'mult-2x' : mult === '3x' ? 'mult-3x' : mult === '4x' ? 'mult-4x' : '';
-                    const scoreClass = score >= 0 ? 'positive' : 'negative';
-                    return `
-                        <tr>
-                            <td>${gameState.playerNames[i] || `Player ${i + 1}`}${i + 1 === lastGame.winner ? ' 👑' : ''}</td>
-                            <td>${cards}</td>
-                            <td>${mult === '-' ? '-' : `<span class="multiplier-badge ${multClass}">${mult}</span>`}</td>
-                            <td>${lastGame.effective[i]}</td>
-                            <td class="${scoreClass}">${score >= 0 ? '+' : ''}${score}</td>
-                        </tr>
-                    `;
-                }).join('');
-                
-                gameCommentaryText.innerHTML = generateGameCommentary(lastGame);
-                gameCommentaryBox.style.display = 'block';
-            } else {
-                currentTable.innerHTML = '<tr><td colspan="5" style="color:#888;">No game calculated yet</td></tr>';
-                gameCommentaryBox.style.display = 'none';
-            }
-
-            const standingsList = document.getElementById('standings');
-            const standings = gameState.totals.map((total, i) => ({ player: i + 1, total, name: gameState.playerNames[i] || `Player ${i + 1}` }))
-                .sort((a, b) => b.total - a.total);
-            
-            standingsList.innerHTML = standings.map((s, i) => {
-                const displayValue = showDollars ? (s.total * gameState.dollarPerPoint).toFixed(2) : (s.total >= 0 ? '+' : '') + s.total;
-                const prefix = showDollars ? '$' : '';
-                return `
-                    <li>
-                        <span>
-                            <span class="rank rank-${i + 1}">${i + 1}${i === 0 ? ' 🏆' : ''}</span>
-                            ${s.name}
-                        </span>
-                        <span class="score ${s.total >= 0 ? 'positive' : 'negative'}">
-                            ${prefix}${displayValue}
-                        </span>
-                    </li>
-                `;
-            }).join('');
-
-            const standingsCommentaryBox = document.getElementById('standingsCommentary');
-            const standingsCommentaryText = document.getElementById('standingsCommentaryText');
-            if (gameState.games.length > 0) {
-                let commentary = generateStandingsCommentary();
-                
-                if (showDollars && gameState.dollarPerPoint > 0) {
-                    const leader = gameState.totals.reduce((max, t, i) => t > max.val ? { val: t, idx: i } : max, { val: -Infinity, idx: 0 });
-                    const leaderDollars = (leader.val * gameState.dollarPerPoint).toFixed(2);
-                    commentary += ` At $${gameState.dollarPerPoint}/point, <strong>${gameState.playerNames[leader.idx]}</strong> is up $${leaderDollars}!`;
-                }
-                
-                standingsCommentaryText.innerHTML = commentary;
-                standingsCommentaryBox.style.display = 'block';
-            } else {
-                standingsCommentaryBox.style.display = 'none';
-            }
-
-            const standingsCard = document.getElementById('standingsCard');
-            if (showDollars) {
-                standingsCard.classList.add('dollar-mode');
-            } else {
-                standingsCard.classList.remove('dollar-mode');
-            }
-
-            const historyDiv = document.getElementById('gameHistory');
-            if (gameState.games.length > 0) {
-                historyDiv.innerHTML = gameState.games.map((g, idx) => `
-                    <div class="game-history-item">
-                        <div class="game-history-header">
-                            <div class="game-history-text">
-                                <strong>Game ${g.game}</strong> - Winner: ${gameState.playerNames[g.winner - 1] || `P${g.winner}`}
-                            </div>
-                            <div class="game-history-actions">
-                                <button class="btn-small btn-edit" onclick="editGame(${idx})">Edit</button>
-                                <button class="btn-small btn-delete" onclick="deleteGame(${idx})">Delete</button>
-                            </div>
-                        </div>
-                        <div style="font-size:12px;color:#888;">
-                            ${g.cards.map((c, i) => `${gameState.playerNames[i] || `P${i + 1}`}: ${c} card${c !== 1 ? 's' : ''}`).join(' | ')}
-                        </div>
-                        <div class="game-history-commentary">
-                            💬 ${generateGameCommentary(g)}
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Reset inputs
-        function resetInputs() {
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById(`p${i}`).value = '';
-                document.getElementById(`p${i}win`).checked = false;
-                document.getElementById(`p${i}`).classList.remove('error');
-            }
-            document.getElementById('inputError').style.display = 'none';
-        }
-
-        // Update dollar display
-        function updateDollarDisplay() {
-            saveData();
-            showDollars = true;
-            updateDisplay();
-        }
-
-        // Show point standings
-        function showPointStandings() {
-            showDollars = false;
-            updateDisplay();
-        }
-
-        // Clear all data
-        function clearAllData() {
-            if (confirm('Reset all game data? This cannot be undone.')) {
-                gameState = { games: [], totals: [0, 0, 0, 0], playerNames: ['Player 1', 'Player 2', 'Player 3', 'Player 4'], dollarPerPoint: 2 };
-                showDollars = false;
-                saveData();
-                updateDisplay();
-            }
-        }
-
-        // Edit game - exposed globally
-        window.editGame = function(gameIdx) {
-            console.log('Editing game:', gameIdx);
-            const game = gameState.games[gameIdx];
-            const modal = document.getElementById('editModal');
-            const modalTitle = document.getElementById('editModalTitle');
-            
-            if (!game || !modal) {
-                alert('Error: Could not find game or modal');
-                return;
-            }
-            
-            modalTitle.textContent = `Edit Game ${game.game}`;
-            
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`editName${i + 1}`).value = gameState.playerNames[i];
-                document.getElementById(`editCards${i + 1}`).value = game.cards[i];
-                document.getElementById(`editWin${i + 1}`).checked = (i + 1 === game.winner);
-            }
-            
-            document.getElementById('editError').style.display = 'none';
-            modal.dataset.gameIdx = gameIdx;
-            modal.classList.add('active');
-        };
-
-        // Save edited game - exposed globally
-        window.saveEditGame = function() {
-            console.log('Save edit clicked');
-            const modal = document.getElementById('editModal');
-            if (!modal) {
-                alert('Modal not found');
-                return;
-            }
-            const gameIdx = parseInt(modal.dataset.gameIdx);
-            console.log('Game index:', gameIdx);
-            
-            const inputs = validateInputs('edit');
-            if (!inputs) {
-                console.log('Validation failed');
-                return;
-            }
-            console.log('Validation passed, inputs:', inputs);
-            
-            for (let i = 0; i < 4; i++) {
-                const nameInput = document.getElementById(`editName${i + 1}`);
-                if (nameInput.value.trim()) {
-                    gameState.playerNames[i] = nameInput.value.trim();
-                }
-            }
-            
-            const winnerIdx = inputs.findIndex(p => p.win);
-            console.log('Winner index:', winnerIdx);
-            
-            const effective = inputs.map((p, i) => {
-                if (i === winnerIdx) return 0;
-                const cards = p.cards || 0;
-                return cards * getMultiplier(cards);
-            });
-            
-            const scores = effective.map((eff, i) => {
-                let score = 0;
-                for (let j = 0; j < 4; j++) {
-                    if (i !== j) {
-                        score += effective[j] - eff;
-                    }
-                }
-                return score;
-            });
-            
-            gameState.games[gameIdx] = {
-                game: gameIdx + 1,
-                cards: inputs.map(p => p.cards || 0),
-                effective,
-                scores,
-                winner: winnerIdx + 1
-            };
-            
-            recalculateTotals();
-            saveData();
-            updateDisplay();
-            modal.classList.remove('active');
-            console.log('Save complete');
-        };
-
-        // Delete game - exposed globally
-        window.deleteGame = function(gameIdx) {
-            if (confirm('Delete this game?')) {
-                gameState.games.splice(gameIdx, 1);
-                gameState.games.forEach((g, i) => g.game = i + 1);
-                recalculateTotals();
-                saveData();
-                updateDisplay();
-            }
-        };
-
-        // Close edit modal - exposed globally
-        window.closeEditModal = function() {
-            document.getElementById('editModal').classList.remove('active');
-        };
-
-        // Recalculate all totals from games
-        function recalculateTotals() {
-            gameState.totals = [0, 0, 0, 0];
-            gameState.games.forEach(g => {
-                for (let i = 0; i < 4; i++) {
-                    gameState.totals[i] += g.scores[i];
-                }
-            });
-        }
-
-        // Auto-clear cards when winner checked, and auto-check winner when cards = 0
+    function buildAllPickers() {
         for (let i = 1; i <= 4; i++) {
-            const cardInput = document.getElementById(`p${i}`);
-            const winInput = document.getElementById(`p${i}win`);
-            
-            // When winner checkbox is checked, clear cards to 0
-            winInput.addEventListener('change', function() {
-                if (this.checked) {
-                    cardInput.value = '0';
-                }
-            });
-            
-            // When cards is changed to 0, auto-check winner
-            cardInput.addEventListener('change', function() {
-                if (this.value === '0' || this.value === '') {
-                    winInput.checked = true;
-                } else {
-                    winInput.checked = false;
-                }
-            });
+            buildPicker('picker'+i, 'p'+i, 'p'+i+'win', 'row'+i, false);
+            buildPicker('editPicker'+i, 'editCards'+i, 'editWin'+i, 'editRow'+i, true);
         }
+    }
 
-        // Initialize
-        loadData();
+    // ── NAME CHANGE ────────────────────────────────────────
+    function onNameChange(i) {
+        const val = document.getElementById('name'+i).value.trim();
+        gameState.playerNames[i-1] = val || ('Player '+i);
+        saveData();
+    }
 
-        // ─────────────────────────────────────────────
-        //  GUIDED VOICE ENTRY — one player at a time
-        // ─────────────────────────────────────────────
-        let recognition  = null;
-        let isListening  = false;
-        let restartTimer = null;
-        let voiceLang    = 'en';
+    // ── TABS ───────────────────────────────────────────────
+    function showTab(id) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-'+id).classList.add('active');
+        ['entry','scores','standings','history'].forEach((t,i) => {
+            if (t === id) document.querySelectorAll('.tab-btn')[i].classList.add('active');
+        });
+    }
 
-        // Guided state
-        let currentStep  = -1;   // -1 = idle, 0-3 = player index
-        let collectedScores = []; // array of {cards, won} per player
-
-        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        // ── Language toggle ──────────────────────────
-        function setLang(lang) {
-            voiceLang = lang;
-            document.getElementById('langEn').classList.toggle('lang-active', lang === 'en');
-            document.getElementById('langZh').classList.toggle('lang-active', lang === 'zh');
-            document.getElementById('voiceHintEn').style.display = lang === 'en' ? '' : 'none';
-            document.getElementById('voiceHintZh').style.display = lang === 'zh' ? '' : 'none';
-            if (currentStep === -1) {
-                document.getElementById('voiceBtnText').textContent = lang === 'en' ? 'Start Voice Entry' : '開始語音輸入';
+    // ── DATA ───────────────────────────────────────────────
+    function loadData() {
+        const saved = localStorage.getItem('big2scorecard');
+        if (saved) {
+            gameState = JSON.parse(saved);
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('name'+i);
+                if (el && gameState.playerNames[i-1]) { el.value = gameState.playerNames[i-1]; }
             }
+            const dp = document.getElementById('dollarPerPoint');
+            if (dp && gameState.dollarPerPoint) dp.value = gameState.dollarPerPoint;
+            updateDisplay();
         }
+    }
 
-        // ── Button tap handler ───────────────────────
-        function voiceBtnTap() {
-            if (currentStep === -1) {
-                startGuided();
-            } else if (isListening) {
-                // Manually confirm what was heard (re-tap while listening)
-                confirmCurrentStep();
+    function saveData() {
+        for (let i = 1; i <= 4; i++) {
+            const el = document.getElementById('name'+i);
+            if (el && el.value.trim()) gameState.playerNames[i-1] = el.value.trim();
+        }
+        const dp = document.getElementById('dollarPerPoint');
+        if (dp) gameState.dollarPerPoint = parseFloat(dp.value) || 0;
+        localStorage.setItem('big2scorecard', JSON.stringify(gameState));
+    }
+
+    // ── GAME LOGIC ─────────────────────────────────────────
+    function getMultiplier(cards) {
+        if (cards >= 13) return 4;
+        if (cards >= 10) return 3;
+        if (cards >= 8)  return 2;
+        return 1;
+    }
+
+    function validateInputs(prefix) {
+        const errId = prefix === '' ? 'inputError' : 'editError';
+        const err = document.getElementById(errId);
+        err.style.display = 'none';
+        const inputs = [];
+        for (let i = 1; i <= 4; i++) {
+            const cardId = prefix === '' ? 'p'+i : 'editCards'+i;
+            const winId  = prefix === '' ? 'p'+i+'win' : 'editWin'+i;
+            const cards  = document.getElementById(cardId).value;
+            const cardN  = cards === '' ? null : parseInt(cards);
+            const win    = document.getElementById(winId).checked;
+            if (cardN !== null && (cardN < 0 || cardN > 13)) {
+                err.textContent = '❌ Cards must be 0–13'; err.style.display = 'block'; return null;
             }
-        }
-
-        function voiceSkip() {
-            // Skip current player — leave their field blank
-            stopListening();
-            collectedScores[currentStep] = null;
-            advanceStep();
-        }
-
-        // ── Start the guided session ─────────────────
-        function startGuided() {
-            if (!SpeechRecognitionAPI) {
-                showVoiceResult('error', voiceLang === 'zh'
-                    ? '❌ 請用 iPhone 嘅 Safari。'
-                    : '❌ Use Safari on iPhone or Chrome on Android.');
-                return;
+            if (win && cardN !== null && cardN !== 0) {
+                err.textContent = '❌ Winner must have 0 cards'; err.style.display = 'block'; return null;
             }
-            collectedScores = [null, null, null, null];
-            currentStep = 0;
-            document.getElementById('voiceResult').className = 'voice-result';
-            document.getElementById('voiceResult').style.display = 'none';
-            document.getElementById('voiceGuide').style.display = 'block';
-            document.getElementById('voiceHint').style.display = 'none';
-            document.getElementById('voiceSkipBtn').style.display = 'block';
-            updateDots();
-            askCurrentPlayer();
+            inputs.push({ cards: cardN, win });
+        }
+        const winners = inputs.filter(p => p.win);
+        if (winners.length > 1) { err.textContent = '❌ Only one winner'; err.style.display = 'block'; return null; }
+        if (winners.length === 0) { err.textContent = '❌ Mark the winner (0 cards / 👑)'; err.style.display = 'block'; return null; }
+        return inputs;
+    }
+
+    function calculateGame() {
+        const inputs = validateInputs('');
+        if (!inputs) return;
+        const winnerIdx = inputs.findIndex(p => p.win);
+        const effective = inputs.map((p,i) => {
+            if (i === winnerIdx) return 0;
+            const c = p.cards || 0;
+            return c * getMultiplier(c);
+        });
+        const scores = effective.map((eff,i) => {
+            let s = 0;
+            for (let j = 0; j < 4; j++) { if (i !== j) s += effective[j] - eff; }
+            return s;
+        });
+        gameState.games.push({ game: gameState.games.length+1, cards: inputs.map(p=>p.cards||0), effective, scores, winner: winnerIdx+1 });
+        for (let i = 0; i < 4; i++) gameState.totals[i] += scores[i];
+        saveData(); updateDisplay(); resetInputs();
+        showTab('scores');
+    }
+
+    function resetInputs() {
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById('p'+i).value = '';
+            document.getElementById('p'+i+'win').checked = false;
+            document.getElementById('row'+i).classList.remove('is-winner','has-value');
+            document.getElementById('wtog'+i).classList.remove('active');
+            document.getElementById('picker'+i).querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+        }
+        document.getElementById('inputError').style.display = 'none';
+    }
+
+    // ── DISPLAY ────────────────────────────────────────────
+    function generateGameCommentary(game) {
+        const names = gameState.playerNames;
+        const winnerName = names[game.winner-1];
+        const scores = game.scores, cards = game.cards;
+        let c = [];
+        const ws = scores[game.winner-1];
+        if (ws >= 80) c.push(`<strong>${winnerName}</strong> absolutely dominated! 🏆`);
+        else if (ws >= 50) c.push(`<strong>${winnerName}</strong> had a strong win! 👑`);
+        else c.push(`<strong>${winnerName}</strong> edged out the win.`);
+        const minS = Math.min(...scores);
+        const loserIdx = scores.indexOf(minS);
+        if (minS <= -80) c.push(`<strong>${names[loserIdx]}</strong> got crushed with ${cards[loserIdx]} cards! 😬`);
+        else if (minS <= -40) c.push(`<strong>${names[loserIdx]}</strong> had a rough round.`);
+        const high = cards.map((v,i)=>({v,i})).filter(x=>x.v>=8).sort((a,b)=>b.v-a.v);
+        if (high.length) { const w=high[0]; const m=getMultiplier(w.v); if(m>=3) c.push(`${m}× multiplier hurt <strong>${names[w.i]}</strong>!`); }
+        return c.join(' ');
+    }
+
+    function generateStandingsCommentary() {
+        const names = gameState.playerNames;
+        const sorted = gameState.totals.map((t,i)=>({t,name:names[i]})).sort((a,b)=>b.t-a.t);
+        const gap = sorted[0].t - sorted[sorted.length-1].t;
+        let c = [];
+        if (gap > 150) c.push(`<strong>${sorted[0].name}</strong> has a commanding lead! 😰`);
+        else if (gap < 30 && gameState.games.length >= 3) c.push(`<span class="tight-race">Tight race!</span> Only ${gap} pts between 1st and last.`);
+        if (gameState.games.length >= 3) {
+            const rs = [0,0,0,0];
+            gameState.games.slice(-3).forEach(g => { for(let i=0;i<4;i++) rs[i]+=g.scores[i]; });
+            const hot = rs.indexOf(Math.max(...rs));
+            c.push(`<span class="hot-streak">${names[hot]}</span> is on a hot streak! 🔥`);
+        }
+        return c.join(' ');
+    }
+
+    function updateDisplay() {
+        const tbody = document.getElementById('currentScores').querySelector('tbody');
+        const gcBox = document.getElementById('gameCommentary');
+        if (gameState.games.length > 0) {
+            const lg = gameState.games[gameState.games.length-1];
+            tbody.innerHTML = lg.scores.map((score,i) => {
+                const cards = lg.cards[i], isWin = i+1 === lg.winner;
+                const mult = isWin ? '–' : getMultiplier(cards)+'×';
+                const mClass = mult==='2×'?'b2x':mult==='3×'?'b3x':mult==='4×'?'b4x':'';
+                return `<tr>
+                    <td class="pname">${gameState.playerNames[i]}${isWin?' 👑':''}</td>
+                    <td>${cards}</td>
+                    <td>${mult!=='–'?`<span class="mult-badge badge ${mClass}">${mult}</span>`:'–'}</td>
+                    <td>${lg.effective[i]}</td>
+                    <td class="${score>=0?'pos':'neg'}">${score>=0?'+':''}${score}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('gameCommentaryText').innerHTML = generateGameCommentary(lg);
+            gcBox.style.display = 'block';
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" style="color:var(--cream-dim);padding:20px 0;font-size:13px;">No game yet</td></tr>';
+            gcBox.style.display = 'none';
         }
 
-        // ── Ask question for current step ────────────
-        function askCurrentPlayer() {
-            if (currentStep > 3) { finishGuided(); return; }
-            const name = gameState.playerNames[currentStep] || ('Player ' + (currentStep + 1));
-            const zh = voiceLang === 'zh';
+        const sl = document.getElementById('standings');
+        const sorted = gameState.totals.map((t,i)=>({t,name:gameState.playerNames[i]})).sort((a,b)=>b.t-a.t);
+        sl.innerHTML = sorted.map((s,rank) => {
+            const disp = showDollars ? '$'+(s.t*gameState.dollarPerPoint).toFixed(2) : (s.t>=0?'+':'')+s.t;
+            return `<li class="standing-row">
+                <span class="standing-rank r${rank+1}">${rank+1}${rank===0?' 🏆':''}</span>
+                <span class="standing-name">${s.name}</span>
+                <span class="standing-score ${s.t>=0?'pos':'neg'}">${disp}</span>
+            </li>`;
+        }).join('');
 
-            const q = zh
-                ? name + ' 有幾多張牌？（講數字，或者講「贏」）'
-                : 'How many cards did ' + name + ' have? (say a number, or say "won")';
+        const scBox = document.getElementById('standingsCommentary');
+        if (gameState.games.length > 0) {
+            document.getElementById('standingsCommentaryText').innerHTML = generateStandingsCommentary();
+            scBox.style.display = 'block';
+        } else { scBox.style.display = 'none'; }
 
-            document.getElementById('voiceQuestion').textContent = q;
-            document.getElementById('voiceTranscript').textContent = '';
-            updateDots();
-
-            // Speak the question aloud using TTS, then listen
-            speakThenListen(q);
+        const hDiv = document.getElementById('gameHistory');
+        if (gameState.games.length > 0) {
+            hDiv.innerHTML = [...gameState.games].reverse().map((g,ri) => {
+                const idx = gameState.games.length-1-ri;
+                const cells = g.cards.map((c,i) => `
+                    <div class="history-score-cell">
+                        <div class="hname">${gameState.playerNames[i]}</div>
+                        <div class="hcards ${i+1===g.winner?'hwinner':''}">${i+1===g.winner?'👑':c}</div>
+                    </div>`).join('');
+                return `<div class="history-item">
+                    <div class="history-header">
+                        <span class="history-game-num">Game ${g.game}</span>
+                        <div class="history-actions">
+                            <button class="btn-sm btn-edit-sm" onclick="editGame(${idx})">Edit</button>
+                            <button class="btn-sm btn-del-sm" onclick="deleteGame(${idx})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="history-scores">${cells}</div>
+                    <div class="commentary">💬 ${generateGameCommentary(g)}</div>
+                </div>`;
+            }).join('');
+        } else {
+            hDiv.innerHTML = '<div style="color:var(--cream-dim);font-size:13px;padding:20px 0;font-family:\'IM Fell English\',serif;font-style:italic;">No games recorded yet</div>';
         }
+    }
 
-        // ── Text-to-speech prompt ────────────────────
-        function speakThenListen(text) {
-            stopListening();
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang  = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
-                utter.rate  = 1.05;
-                utter.onend = () => { if (currentStep >= 0 && currentStep <= 3) startListeningStep(); };
-                utter.onerror = () => startListeningStep();
-                window.speechSynthesis.speak(utter);
+    function updateDollarDisplay() {
+        saveData(); showDollars = true;
+        document.getElementById('btnDollars').classList.add('active');
+        document.getElementById('btnPoints').classList.remove('active');
+        updateDisplay();
+    }
+    function showPointStandings() {
+        showDollars = false;
+        document.getElementById('btnPoints').classList.add('active');
+        document.getElementById('btnDollars').classList.remove('active');
+        updateDisplay();
+    }
+    function clearAllData() {
+        if (confirm('Reset all game data? This cannot be undone.')) {
+            gameState = { games:[], totals:[0,0,0,0], playerNames:['Player 1','Player 2','Player 3','Player 4'], dollarPerPoint:2 };
+            showDollars = false; saveData(); updateDisplay();
+        }
+    }
 
-                // Update button to show it's about to listen
-                document.getElementById('voiceBtn').classList.remove('listening');
-                document.getElementById('voiceBtnIcon').textContent = '🔊';
-                document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '問緊…' : 'Asking…';
-            } else {
-                startListeningStep();
+    window.editGame = function(idx) {
+        const g = gameState.games[idx];
+        document.getElementById('editModalTitle').textContent = 'Edit Game ' + g.game;
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById('editName'+i).value = gameState.playerNames[i-1];
+            document.getElementById('editCards'+i).value = g.cards[i-1];
+            document.getElementById('editWin'+i).checked = (i === g.winner);
+            document.getElementById('ewtog'+i).classList.toggle('active', i === g.winner);
+            buildPicker('editPicker'+i, 'editCards'+i, 'editWin'+i, 'editRow'+i, true);
+            setPickerValue('editCards'+i, 'editWin'+i, 'editRow'+i, 'editPicker'+i, true, g.cards[i-1]);
+        }
+        document.getElementById('editError').style.display = 'none';
+        document.getElementById('editModal').dataset.gameIdx = idx;
+        document.getElementById('editModal').classList.add('active');
+    };
+
+    window.saveEditGame = function() {
+        const modal = document.getElementById('editModal');
+        const idx = parseInt(modal.dataset.gameIdx);
+        const inputs = validateInputs('edit');
+        if (!inputs) return;
+        for (let i = 1; i <= 4; i++) {
+            const n = document.getElementById('editName'+i).value.trim();
+            if (n) gameState.playerNames[i-1] = n;
+        }
+        const winnerIdx = inputs.findIndex(p => p.win);
+        const effective = inputs.map((p,i) => { if(i===winnerIdx) return 0; const c=p.cards||0; return c*getMultiplier(c); });
+        const scores = effective.map((eff,i) => { let s=0; for(let j=0;j<4;j++) if(i!==j) s+=effective[j]-eff; return s; });
+        gameState.games[idx] = { game:idx+1, cards:inputs.map(p=>p.cards||0), effective, scores, winner:winnerIdx+1 };
+        recalculateTotals(); saveData(); updateDisplay(); modal.classList.remove('active');
+    };
+
+    window.deleteGame = function(idx) {
+        if (confirm('Delete this game?')) {
+            gameState.games.splice(idx, 1);
+            gameState.games.forEach((g,i) => g.game = i+1);
+            recalculateTotals(); saveData(); updateDisplay();
+        }
+    };
+
+    window.closeEditModal = function() {
+        document.getElementById('editModal').classList.remove('active');
+    };
+
+    function recalculateTotals() {
+        gameState.totals = [0,0,0,0];
+        gameState.games.forEach(g => { for(let i=0;i<4;i++) gameState.totals[i]+=g.scores[i]; });
+    }
+
+    buildAllPickers();
+    loadData();
+
+    // ─────────────────────────────────────────────
+    //  GUIDED VOICE ENTRY
+    // ─────────────────────────────────────────────
+    let recognition = null, isListening = false, restartTimer = null;
+    let voiceLang = 'en', currentStep = -1, collectedScores = [];
+
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    function setLang(lang) {
+        voiceLang = lang;
+        document.getElementById('langEn').classList.toggle('active', lang === 'en');
+        document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+        document.getElementById('voiceHintEn').style.display = lang === 'en' ? '' : 'none';
+        document.getElementById('voiceHintZh').style.display = lang === 'zh' ? '' : 'none';
+        if (currentStep === -1) document.getElementById('voiceBtnText').textContent = lang === 'en' ? 'Start' : '開始';
+    }
+
+    function voiceBtnTap() {
+        if (currentStep === -1) startGuided();
+        else if (isListening) confirmCurrentStep();
+    }
+
+    function voiceSkip() {
+        stopListening();
+        collectedScores[currentStep] = null;
+        advanceStep();
+    }
+
+    function startGuided() {
+        if (!SpeechRecognitionAPI) {
+            showVoiceResult('error', voiceLang === 'zh' ? '❌ 請用 Safari。' : '❌ Use Safari on iPhone or Chrome on Android.');
+            return;
+        }
+        collectedScores = [null,null,null,null];
+        currentStep = 0;
+        document.getElementById('voiceResult').className = 'voice-result';
+        document.getElementById('voiceResult').style.display = 'none';
+        document.getElementById('voiceGuide').style.display = 'block';
+        document.getElementById('voiceHint').style.display = 'none';
+        document.getElementById('voiceSkipBtn').style.display = 'block';
+        updateDots(); askCurrentPlayer();
+    }
+
+    function askCurrentPlayer() {
+        if (currentStep > 3) { finishGuided(); return; }
+        const name = gameState.playerNames[currentStep] || ('Player '+(currentStep+1));
+        const zh = voiceLang === 'zh';
+        const q = zh
+            ? name + ' 有幾多張牌？（講數字或「贏」）'
+            : name + ': how many cards? (say a number or "won")';
+        document.getElementById('voiceQuestion').textContent = q;
+        document.getElementById('voiceTranscript').textContent = '';
+        updateDots(); speakThenListen(q);
+    }
+
+    function speakThenListen(text) {
+        stopListening();
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
+            u.rate = 1.05;
+            let started = false;
+            const go = () => { if (!started) { started = true; if (currentStep >= 0 && currentStep <= 3) startListeningStep(); } };
+            u.onend   = go;
+            u.onerror = go;
+            window.speechSynthesis.speak(u);
+            // Fallback: if TTS takes >3s or never fires, start listening anyway
+            setTimeout(go, 3000);
+            document.getElementById('voiceBtn').classList.remove('listening');
+            document.getElementById('voiceBtnIcon').textContent = '🔊';
+            document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '問緊…' : 'Asking…';
+        } else { startListeningStep(); }
+    }
+
+    function startListeningStep() {
+        if (currentStep < 0 || currentStep > 3) return;
+        isListening = true;
+        document.getElementById('voiceBtn').classList.add('listening');
+        document.getElementById('voiceBtnIcon').textContent = '🎤';
+        document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '聽緊…' : 'Listening…';
+        spawnRecognition();
+    }
+
+    function spawnRecognition() {
+        if (!isListening || currentStep < 0) return;
+        const rec = new SpeechRecognitionAPI();
+        // iOS Safari works better with continuous=false but needs restart loop (already handled).
+        // For English, interimResults is key — without it nothing shows while speaking.
+        rec.continuous      = false;
+        rec.interimResults  = true;
+        rec.maxAlternatives = 3;
+        rec.lang = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
+        recognition = rec;
+        const tEl = document.getElementById('voiceTranscript');
+        let gotFinal = false;
+
+        rec.onresult = function(e) {
+            let interim = '', final = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                if (e.results[i].isFinal) final   += e.results[i][0].transcript;
+                else                       interim += e.results[i][0].transcript;
             }
-        }
+            // Always show something — this is what was missing for English
+            if (interim) tEl.textContent = '…' + interim;
+            if (final)   tEl.textContent = final;
 
-        // ── Start listening for one answer ───────────
-        function startListeningStep() {
-            if (currentStep < 0 || currentStep > 3) return;
-            isListening = true;
-            document.getElementById('voiceBtn').classList.add('listening');
-            document.getElementById('voiceBtnIcon').textContent = '🎤';
-            document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '聽緊…' : 'Listening…';
-            spawnRecognition();
-        }
-
-        // ── Spawn one recognition instance ───────────
-        function spawnRecognition() {
-            if (!isListening || currentStep < 0) return;
-
-            const rec = new SpeechRecognitionAPI();
-            rec.continuous     = false;
-            rec.interimResults = true;
-            rec.maxAlternatives = 3;
-            rec.lang           = voiceLang === 'zh' ? 'zh-HK' : 'en-US';
-            recognition = rec;
-
-            const transcriptEl = document.getElementById('voiceTranscript');
-
-            rec.onresult = function(e) {
-                let interim = '', final = '';
-                for (let i = e.resultIndex; i < e.results.length; i++) {
-                    if (e.results[i].isFinal) final   += e.results[i][0].transcript;
-                    else                       interim += e.results[i][0].transcript;
-                }
-                transcriptEl.textContent = final || interim;
-
-                if (final.trim()) {
-                    const parsed = parseAnswer(final.trim());
-                    if (parsed !== null) {
-                        stopListening();
-                        collectedScores[currentStep] = parsed;
-                        showStepConfirm(parsed);
-                        setTimeout(advanceStep, 700);
-                    } else {
-                        // Heard something but couldn't parse — ask to retry
-                        transcriptEl.textContent = '❓ ' + final.trim();
-                        stopListening();
-                        setTimeout(() => {
-                            if (currentStep >= 0) {
-                                transcriptEl.textContent = '';
-                                startListeningStep();
-                            }
-                        }, 900);
-                    }
-                }
-            };
-
-            rec.onerror = function(e) {
-                if (!isListening) return;
-                if (e.error === 'aborted' || e.error === 'no-speech') return;
-                if (e.error === 'not-allowed') {
-                    showVoiceResult('error', voiceLang === 'zh'
-                        ? '❌ 未批准使用咪高峰。請喺設定允許。'
-                        : '❌ Microphone access denied. Please allow in browser settings.');
-                    abortGuided();
-                }
-            };
-
-            rec.onend = function() {
-                if (!isListening) return;
-                restartTimer = setTimeout(spawnRecognition, 100);
-            };
-
-            try { rec.start(); } catch(_) {
-                restartTimer = setTimeout(spawnRecognition, 300);
-            }
-        }
-
-        // ── Parse a single spoken answer ─────────────
-        function parseAnswer(text) {
-            const t = text.toLowerCase().trim();
-            const zh = voiceLang === 'zh';
-
-            // Win keywords
-            const winWords = ['won','win','winner','wins','out','zero','none','champion',
-                              '贏','贏咗','冠軍','出晒','零','冇'];
-            for (const w of winWords) {
-                if (t.includes(w)) return { cards: 0, won: true };
-            }
-
-            // Chinese number words → digit
-            const zhMap = [['十三',13],['十二',12],['十一',11],['十',10],
-                           ['九',9],['八',8],['七',7],['六',6],['五',5],
-                           ['四',4],['三',3],['兩',2],['二',2],['一',1],['零',0]];
-            let normalized = t;
-            for (const [w, n] of zhMap) normalized = normalized.split(w).join(' ' + n + ' ');
-
-            // English number words
-            const enMap = {zero:0,one:1,two:2,three:3,four:4,five:5,six:6,
-                           seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13};
-            normalized = normalized.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen)\b/gi,
-                m => ' ' + enMap[m.toLowerCase()] + ' ');
-
-            // Extract first valid number 0-13
-            const m = normalized.match(/\b(\d+)\b/);
-            if (m) {
-                const n = parseInt(m[1]);
-                if (n >= 0 && n <= 13) return { cards: n, won: n === 0 };
-            }
-            return null; // couldn't parse
-        }
-
-        // ── Show brief confirmation for this step ─────
-        function showStepConfirm(result) {
-            const name = gameState.playerNames[currentStep] || ('Player ' + (currentStep + 1));
-            const zh = voiceLang === 'zh';
-            const msg = result.won
-                ? '✅ ' + name + ' 👑 ' + (zh ? '贏！' : 'won!')
-                : '✅ ' + name + ': ' + result.cards + (zh ? ' 張' : (result.cards !== 1 ? ' cards' : ' card'));
-            document.getElementById('voiceTranscript').textContent = msg;
-        }
-
-        // ── Advance to next player ────────────────────
-        function advanceStep() {
-            markDotDone(currentStep);
-            currentStep++;
-            if (currentStep > 3) {
-                finishGuided();
-            } else {
-                askCurrentPlayer();
-            }
-        }
-
-        function confirmCurrentStep() {
-            // If listening and transcript has something, force-accept it
-            const t = document.getElementById('voiceTranscript').textContent.trim();
-            if (t) {
-                const parsed = parseAnswer(t);
+            if (final.trim() && !gotFinal) {
+                gotFinal = true;
+                const parsed = parseAnswer(final.trim());
                 if (parsed !== null) {
                     stopListening();
                     collectedScores[currentStep] = parsed;
                     showStepConfirm(parsed);
                     setTimeout(advanceStep, 700);
+                } else {
+                    // Show what was heard, retry after a moment
+                    tEl.textContent = '❓ "' + final.trim() + '" — try again';
+                    stopListening();
+                    setTimeout(() => {
+                        if (currentStep >= 0) { gotFinal = false; tEl.textContent = ''; startListeningStep(); }
+                    }, 1200);
                 }
             }
-        }
+        };
 
-        // ── Finish — fill all fields ──────────────────
-        function finishGuided() {
-            stopListening();
-            window.speechSynthesis && window.speechSynthesis.cancel();
-            currentStep = -1;
+        rec.onspeechstart = function() {
+            // User started speaking — show mic is active
+            if (!tEl.textContent) tEl.textContent = '…';
+        };
 
-            // Fill form fields
-            let filled = 0, winnerCount = 0;
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById('p' + i).value = '';
-                document.getElementById('p' + i + 'win').checked = false;
+        rec.onerror = function(e) {
+            if (!isListening) return;
+            if (e.error === 'aborted') return;
+            if (e.error === 'no-speech') return; // silence — restart quietly
+            if (e.error === 'not-allowed') {
+                showVoiceResult('error', voiceLang === 'zh' ? '❌ 請允許使用咪高峰。' : '❌ Please allow microphone access in browser settings.');
+                abortGuided();
             }
-            for (let i = 0; i < 4; i++) {
-                const score = collectedScores[i];
-                if (score === null) continue;
-                document.getElementById('p' + (i+1)).value = score.cards;
-                if (score.won) {
-                    document.getElementById('p' + (i+1) + 'win').checked = true;
-                    winnerCount++;
-                }
-                filled++;
-            }
+        };
 
-            // Show summary
-            const zh = voiceLang === 'zh';
-            const parts = collectedScores.map((s, i) => {
-                if (!s) return null;
-                const name = gameState.playerNames[i] || ('Player ' + (i+1));
-                return s.won ? name + ' 👑' : name + ' ' + s.cards + (zh ? '張' : (s.cards !== 1 ? ' cards' : ' card'));
-            }).filter(Boolean);
+        // iOS fires onend after each pause — restart loop keeps mic alive
+        rec.onend = function() {
+            if (!isListening) return;
+            if (gotFinal) return; // already handled
+            restartTimer = setTimeout(spawnRecognition, 100);
+        };
 
-            let msg = (zh ? '✅ 完成：' : '✅ Done: ') + parts.join(' · ');
-            if (winnerCount > 1) msg += zh ? ' ⚠️ 多過一個贏家！' : ' ⚠️ Multiple winners!';
-            showVoiceResult('success', msg);
-
-            // Reset UI
-            document.getElementById('voiceGuide').style.display = 'none';
-            document.getElementById('voiceHint').style.display = 'block';
-            document.getElementById('voiceSkipBtn').style.display = 'none';
-            document.getElementById('voiceBtn').classList.remove('listening');
-            document.getElementById('voiceBtnIcon').textContent = '🎤';
-            document.getElementById('voiceBtnText').textContent = zh ? '再試一次' : 'Start Again';
-            updateDots();
+        try { rec.start(); } catch(_) {
+            restartTimer = setTimeout(spawnRecognition, 300);
         }
+    }
 
-        function abortGuided() {
-            stopListening();
-            window.speechSynthesis && window.speechSynthesis.cancel();
-            currentStep = -1;
-            document.getElementById('voiceGuide').style.display = 'none';
-            document.getElementById('voiceHint').style.display = 'block';
-            document.getElementById('voiceSkipBtn').style.display = 'none';
-            document.getElementById('voiceBtnIcon').textContent = '🎤';
-            document.getElementById('voiceBtnText').textContent = voiceLang === 'zh' ? '開始語音輸入' : 'Start Voice Entry';
-            document.getElementById('voiceBtn').classList.remove('listening');
-        }
+    function parseAnswer(text) {
+        const t = text.toLowerCase().trim();
+        const winWords = ['won','win','winner','wins','out','zero','none','champion','贏','贏咗','冠軍','出晒','零','冇'];
+        for (const w of winWords) { if(t.includes(w)) return {cards:0,won:true}; }
+        const zhMap=[['十三',13],['十二',12],['十一',11],['十',10],['九',9],['八',8],['七',7],['六',6],['五',5],['四',4],['三',3],['兩',2],['二',2],['一',1],['零',0]];
+        let norm=t; for(const[w,n] of zhMap) norm=norm.split(w).join(' '+n+' ');
+        const enMap={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13};
+        norm=norm.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen)\b/gi,m=>' '+enMap[m.toLowerCase()]+' ');
+        const m=norm.match(/\b(\d+)\b/);
+        if(m){const n=parseInt(m[1]);if(n>=0&&n<=13)return{cards:n,won:n===0};}
+        return null;
+    }
 
-        // ── Stop recognition safely ───────────────────
-        function stopListening() {
-            isListening = false;
-            clearTimeout(restartTimer);
-            if (recognition) {
-                recognition.onend    = null;
-                recognition.onerror  = null;
-                recognition.onresult = null;
-                try { recognition.abort(); } catch(_) {}
-                recognition = null;
-            }
-        }
+    function showStepConfirm(result) {
+        const name = gameState.playerNames[currentStep]||('Player '+(currentStep+1));
+        const zh = voiceLang==='zh';
+        document.getElementById('voiceTranscript').textContent = result.won
+            ? '✅ '+name+' 👑 '+(zh?'贏！':'won!')
+            : '✅ '+name+': '+result.cards+(zh?' 張':(result.cards!==1?' cards':' card'));
+    }
 
-        // ── Dot progress indicators ───────────────────
-        function updateDots() {
-            for (let i = 0; i < 4; i++) {
-                const dot = document.getElementById('dot' + i);
-                dot.className = 'step-dot';
-                if (i < currentStep)      dot.classList.add('done');
-                else if (i === currentStep) dot.classList.add('active');
-            }
-        }
+    function advanceStep() {
+        markDotDone(currentStep); currentStep++;
+        if(currentStep>3) finishGuided(); else askCurrentPlayer();
+    }
 
-        function markDotDone(idx) {
-            const dot = document.getElementById('dot' + idx);
-            if (dot) { dot.className = 'step-dot done'; }
-        }
+    function confirmCurrentStep() {
+        const t=document.getElementById('voiceTranscript').textContent.trim();
+        if(t){const p=parseAnswer(t);if(p!==null){stopListening();collectedScores[currentStep]=p;showStepConfirm(p);setTimeout(advanceStep,700);}}
+    }
 
-        function showVoiceResult(type, msg) {
-            const el = document.getElementById('voiceResult');
-            el.className = 'voice-result ' + type;
-            el.textContent = msg;
-            el.style.display = 'block';
-        }
-    </script>
-    <div style="text-align:center; padding: 20px 0 10px; color: #444; font-size: 13px; letter-spacing: 0.5px;">
-        Built by SBB
-    </div>
+    function finishGuided() {
+        stopListening();
+        window.speechSynthesis && window.speechSynthesis.cancel();
+        currentStep = -1;
+        for(let i=0;i<4;i++){const s=collectedScores[i];if(s===null)continue;setPickerValue('p'+(i+1),'p'+(i+1)+'win','row'+(i+1),'picker'+(i+1),false,s.cards);}
+        const zh=voiceLang==='zh';
+        const parts=collectedScores.map((s,i)=>{if(!s)return null;const name=gameState.playerNames[i]||('Player '+(i+1));return s.won?name+' 👑':name+' '+s.cards+(zh?'張':(s.cards!==1?' cards':' card'));}).filter(Boolean);
+        showVoiceResult('success',(zh?'✅ 完成：':'✅ Done: ')+parts.join(' · '));
+        document.getElementById('voiceGuide').style.display='none';
+        document.getElementById('voiceHint').style.display='block';
+        document.getElementById('voiceSkipBtn').style.display='none';
+        document.getElementById('voiceBtn').classList.remove('listening');
+        document.getElementById('voiceBtnIcon').textContent='🎤';
+        document.getElementById('voiceBtnText').textContent=zh?'再試':'Start';
+        updateDots();
+    }
 
+    function abortGuided() {
+        stopListening(); window.speechSynthesis&&window.speechSynthesis.cancel();
+        currentStep=-1;
+        document.getElementById('voiceGuide').style.display='none';
+        document.getElementById('voiceHint').style.display='block';
+        document.getElementById('voiceSkipBtn').style.display='none';
+        document.getElementById('voiceBtn').classList.remove('listening');
+        document.getElementById('voiceBtnIcon').textContent='🎤';
+        document.getElementById('voiceBtnText').textContent=voiceLang==='zh'?'開始':'Start';
+    }
+
+    function stopListening() {
+        isListening=false; clearTimeout(restartTimer);
+        if(recognition){recognition.onend=null;recognition.onerror=null;recognition.onresult=null;try{recognition.abort();}catch(_){}recognition=null;}
+    }
+
+    function updateDots() {
+        for(let i=0;i<4;i++){const d=document.getElementById('dot'+i);d.className='step-dot';if(i<currentStep)d.classList.add('done');else if(i===currentStep)d.classList.add('active');}
+    }
+    function markDotDone(idx){const d=document.getElementById('dot'+idx);if(d){d.className='step-dot done';}}
+
+    function showVoiceResult(type,msg){const el=document.getElementById('voiceResult');el.className='voice-result '+type;el.textContent=msg;el.style.display='block';}
+</script>
 </body>
 </html>
